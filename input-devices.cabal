@@ -6,5 +6,7 @@ copyright:     (c) 2019 yumiova
 author:        yumiova
 maintainer:    yumiova@protonmail.ch
 stability:     alpha
+homepage:      https://github.com/yumiova/input-devices
+bug-reports:   https://github.com/yumiova/input-devices/issues
 
 library
