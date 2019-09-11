@@ -8,5 +8,6 @@ maintainer:    yumiova@protonmail.ch
 stability:     alpha
 homepage:      https://github.com/yumiova/input-devices
 bug-reports:   https://github.com/yumiova/input-devices/issues
+synopsis:      Programmable user-space Linux input device drivers
 
 library
