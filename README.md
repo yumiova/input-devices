@@ -1,1 +1,1 @@
-# input-devices
+# input-devices: Programmable user-space Linux input device drivers
