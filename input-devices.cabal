@@ -12,6 +12,10 @@ homepage:      https://github.com/yumiova/input-devices
 bug-reports:   https://github.com/yumiova/input-devices/issues
 synopsis:      Programmable user-space Linux input device drivers
 
+source-repository head
+  type:     git
+  location: https://github.com/yumiova/input-devices
+
 library
   default-language: Haskell2010
   build-depends:    base >=4.12.0.0 && <4.13
