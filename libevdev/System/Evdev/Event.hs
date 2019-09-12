@@ -477,6 +477,50 @@ module System.Evdev.Event
         ReservedRel,
         WheelHiResRel,
         HwheelHiResRel
+        ),
+    Abs
+      ( XAbs,
+        YAbs,
+        ZAbs,
+        RxAbs,
+        RyAbs,
+        RzAbs,
+        ThrottleAbs,
+        RudderAbs,
+        WheelAbs,
+        GasAbs,
+        BrakeAbs,
+        Hat0xAbs,
+        Hat0yAbs,
+        Hat1xAbs,
+        Hat1yAbs,
+        Hat2xAbs,
+        Hat2yAbs,
+        Hat3xAbs,
+        Hat3yAbs,
+        PressureAbs,
+        DistanceAbs,
+        TiltXAbs,
+        TiltYAbs,
+        ToolWidthAbs,
+        VolumeAbs,
+        MiscAbs,
+        ReservedAbs,
+        MtSlotAbs,
+        MtTouchMajorAbs,
+        MtTouchMinorAbs,
+        MtWidthMajorAbs,
+        MtWidthMinorAbs,
+        MtOrientationAbs,
+        MtPositionXAbs,
+        MtPositionYAbs,
+        MtToolTypeAbs,
+        MtBlobIdAbs,
+        MtTrackingIdAbs,
+        MtPressureAbs,
+        MtDistanceAbs,
+        MtToolXAbs,
+        MtToolYAbs
         )
     )
 where
@@ -964,3 +1008,47 @@ data Rel
   | ReservedRel
   | WheelHiResRel
   | HwheelHiResRel
+
+data Abs
+  = XAbs
+  | YAbs
+  | ZAbs
+  | RxAbs
+  | RyAbs
+  | RzAbs
+  | ThrottleAbs
+  | RudderAbs
+  | WheelAbs
+  | GasAbs
+  | BrakeAbs
+  | Hat0xAbs
+  | Hat0yAbs
+  | Hat1xAbs
+  | Hat1yAbs
+  | Hat2xAbs
+  | Hat2yAbs
+  | Hat3xAbs
+  | Hat3yAbs
+  | PressureAbs
+  | DistanceAbs
+  | TiltXAbs
+  | TiltYAbs
+  | ToolWidthAbs
+  | VolumeAbs
+  | MiscAbs
+  | ReservedAbs
+  | MtSlotAbs
+  | MtTouchMajorAbs
+  | MtTouchMinorAbs
+  | MtWidthMajorAbs
+  | MtWidthMinorAbs
+  | MtOrientationAbs
+  | MtPositionXAbs
+  | MtPositionYAbs
+  | MtToolTypeAbs
+  | MtBlobIdAbs
+  | MtTrackingIdAbs
+  | MtPressureAbs
+  | MtDistanceAbs
+  | MtToolXAbs
+  | MtToolYAbs
