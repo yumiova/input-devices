@@ -13,12 +13,13 @@ module System.Evdev.Event
         PwrEv,
         FfStatusEv,
         MaxEv
-        )
+        ),
+    Syn (ReportSyn, ConfigSyn, MtReportSyn, DroppedSyn)
     )
 where
 
 data Ev
-  = SynEv
+  = SynEv Syn
   | KeyEv
   | RelEv
   | AbsEv
@@ -31,3 +32,9 @@ data Ev
   | PwrEv
   | FfStatusEv
   | MaxEv
+
+data Syn
+  = ReportSyn
+  | ConfigSyn
+  | MtReportSyn
+  | DroppedSyn
