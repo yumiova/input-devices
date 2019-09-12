@@ -462,6 +462,21 @@ module System.Evdev.Event
         SlowreverseKey,
         DataKey,
         OnscreenKeyboardKey
+        ),
+    Rel
+      ( XRel,
+        YRel,
+        ZRel,
+        RxRel,
+        RyRel,
+        RzRel,
+        HwheelRel,
+        DialRel,
+        WheelRel,
+        MiscRel,
+        ReservedRel,
+        WheelHiResRel,
+        HwheelHiResRel
         )
     )
 where
@@ -934,3 +949,18 @@ data Key
   | SlowreverseKey
   | DataKey
   | OnscreenKeyboardKey
+
+data Rel
+  = XRel
+  | YRel
+  | ZRel
+  | RxRel
+  | RyRel
+  | RzRel
+  | HwheelRel
+  | DialRel
+  | WheelRel
+  | MiscRel
+  | ReservedRel
+  | WheelHiResRel
+  | HwheelHiResRel
