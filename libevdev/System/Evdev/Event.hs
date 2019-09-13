@@ -16,6 +16,7 @@ module System.Evdev.Event
         PwrVal,
         FfStatusVal
         ),
+    relevant,
     Ev
       ( SynEv,
         KeyEv,
@@ -746,6 +747,20 @@ data Val
   | PwrVal
   | FfStatusVal
   deriving (Eq, Ord, Show, Read)
+
+relevant :: Val -> Ev
+relevant (SynVal _) = SynEv
+relevant (KeyVal _) = KeyEv
+relevant (RelVal _ _) = RelEv
+relevant (AbsVal _ _) = AbsEv
+relevant (MscVal _) = MscEv
+relevant (SwVal _) = SwEv
+relevant (LedVal _) = LedEv
+relevant (SndVal _) = SndEv
+relevant (RepVal _) = RepEv
+relevant FfVal = FfEv
+relevant PwrVal = PwrEv
+relevant FfStatusVal = FfStatusEv
 
 data Ev
   = SynEv
