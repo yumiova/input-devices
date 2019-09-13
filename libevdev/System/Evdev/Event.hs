@@ -17,6 +17,7 @@ module System.Evdev.Event
         FfStatusEv
         ),
     Syn (ReportSyn, ConfigSyn, MtReportSyn, DroppedSyn),
+    encodeSyn,
     Key
       ( ReservedKey,
         EscKey,
@@ -733,6 +734,12 @@ data Syn
   | ConfigSyn
   | MtReportSyn
   | DroppedSyn
+
+encodeSyn :: Syn -> Word16
+encodeSyn ReportSyn = [C.pure| uint16_t { SYN_REPORT } |]
+encodeSyn ConfigSyn = [C.pure| uint16_t { SYN_CONFIG } |]
+encodeSyn MtReportSyn = [C.pure| uint16_t { SYN_MT_REPORT } |]
+encodeSyn DroppedSyn = [C.pure| uint16_t { SYN_DROPPED } |]
 
 data Key
   = ReservedKey
