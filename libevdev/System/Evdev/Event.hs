@@ -700,6 +700,7 @@ module System.Evdev.Event
         BellSnd,
         ToneSnd
         ),
+    decodeSnd,
     encodeSnd
     )
 where
@@ -707,7 +708,7 @@ where
 import Data.Monoid (First (First, getFirst))
 import Data.Word (Word16)
 import qualified Language.C.Inline as C
-import Prelude hiding (abs)
+import Prelude hiding (abs, snd)
 
 C.include "<stdint.h>"
 
@@ -2128,6 +2129,13 @@ data Snd
   | BellSnd
   | ToneSnd
   deriving (Bounded, Enum)
+
+decodeSnd :: Word16 -> Maybe Snd
+decodeSnd code = getFirst (foldMap (First . match) [minBound .. maxBound])
+  where
+    match snd
+      | encodeSnd snd == code = Just snd
+      | otherwise = Nothing
 
 encodeSnd :: Snd -> Word16
 encodeSnd ClickSnd = [C.pure| uint16_t { SND_CLICK } |]
