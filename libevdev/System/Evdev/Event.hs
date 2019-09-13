@@ -709,7 +709,7 @@ where
 
 import Data.Monoid (First (First, getFirst))
 import Data.Word (Word16)
-import qualified Language.C.Inline as C
+import qualified Language.C.Inline as C (include, pure)
 import Prelude hiding (abs, snd)
 
 C.include "<stdint.h>"
