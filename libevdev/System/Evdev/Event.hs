@@ -1873,6 +1873,7 @@ data Rel
   | DialRel
   | WheelRel
   | MiscRel
+  deriving (Bounded, Enum)
 
 encodeRel :: Rel -> Word16
 encodeRel XRel = [C.pure| uint16_t { REL_X } |]
