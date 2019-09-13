@@ -745,6 +745,7 @@ data Val
   | FfVal
   | PwrVal
   | FfStatusVal
+  deriving (Eq, Ord, Show, Read)
 
 data Ev
   = SynEv
