@@ -672,6 +672,7 @@ module System.Evdev.Event
         ScanMsc,
         TimestampMsc
         ),
+    decodeMsc,
     encodeMsc,
     Led
       ( NumlLed,
@@ -2051,6 +2052,13 @@ data Msc
   | ScanMsc
   | TimestampMsc
   deriving (Bounded, Enum)
+
+decodeMsc :: Word16 -> Maybe Msc
+decodeMsc code = getFirst (foldMap (First . match) [minBound .. maxBound])
+  where
+    match msc
+      | encodeMsc msc == code = Just msc
+      | otherwise = Nothing
 
 encodeMsc :: Msc -> Word16
 encodeMsc SerialMsc = [C.pure| uint16_t { MSC_SERIAL } |]
