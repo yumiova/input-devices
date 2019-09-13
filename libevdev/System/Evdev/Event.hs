@@ -2081,6 +2081,7 @@ data Led
   | MiscLed
   | MailLed
   | ChargingLed
+  deriving (Bounded, Enum)
 
 encodeLed :: Led -> Word16
 encodeLed NumlLed = [C.pure| uint16_t { LED_NUML } |]
