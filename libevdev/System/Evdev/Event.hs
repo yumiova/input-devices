@@ -641,6 +641,7 @@ module System.Evdev.Event
         MtToolXAbs,
         MtToolYAbs
         ),
+    decodeAbs,
     encodeAbs,
     Sw
       ( LidSw,
@@ -697,6 +698,7 @@ where
 import Data.Monoid (First (First, getFirst))
 import Data.Word (Word16)
 import qualified Language.C.Inline as C
+import Prelude hiding (abs)
 
 C.include "<stdint.h>"
 
@@ -1940,6 +1942,13 @@ data Abs
   | MtToolXAbs
   | MtToolYAbs
   deriving (Bounded, Enum)
+
+decodeAbs :: Word16 -> Maybe Abs
+decodeAbs code = getFirst (foldMap (First . match) [minBound .. maxBound])
+  where
+    match abs
+      | encodeAbs abs == code = Just abs
+      | otherwise = Nothing
 
 encodeAbs :: Abs -> Word16
 encodeAbs XAbs = [C.pure| uint16_t { ABS_X } |]
