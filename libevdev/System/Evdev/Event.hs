@@ -561,6 +561,10 @@ module System.Evdev.Event
         MiscLed,
         MailLed,
         ChargingLed
+        ),
+    Rep
+      ( DelayRep,
+        PeriodRep
         )
     )
 where
@@ -574,7 +578,7 @@ data Ev
   | SwEv Sw
   | LedEv Led
   | SndEv
-  | RepEv
+  | RepEv Rep
   | FfEv
   | PwrEv
   | FfStatusEv
@@ -1132,3 +1136,7 @@ data Led
   | MiscLed
   | MailLed
   | ChargingLed
+
+data Rep
+  = DelayRep
+  | PeriodRep
