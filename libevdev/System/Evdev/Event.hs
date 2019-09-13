@@ -2,7 +2,21 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module System.Evdev.Event
-  ( Ev
+  ( Val
+      ( SynVal,
+        KeyVal,
+        RelVal,
+        AbsVal,
+        MscVal,
+        SwVal,
+        LedVal,
+        SndVal,
+        RepVal,
+        FfVal,
+        PwrVal,
+        FfStatusVal
+        ),
+    Ev
       ( SynEv,
         KeyEv,
         RelEv,
@@ -716,16 +730,30 @@ C.include "<stdint.h>"
 
 C.include "<linux/input.h>"
 
+data Val
+  = SynVal Syn
+  | KeyVal Key
+  | RelVal Rel Integer
+  | AbsVal Abs Integer
+  | MscVal Msc
+  | SwVal Sw
+  | LedVal Led
+  | SndVal Snd
+  | RepVal Rep
+  | FfVal
+  | PwrVal
+  | FfStatusVal
+
 data Ev
-  = SynEv Syn
-  | KeyEv Key
-  | RelEv Rel
-  | AbsEv Abs
-  | MscEv Msc
-  | SwEv Sw
-  | LedEv Led
-  | SndEv Snd
-  | RepEv Rep
+  = SynEv
+  | KeyEv
+  | RelEv
+  | AbsEv
+  | MscEv
+  | SwEv
+  | LedEv
+  | SndEv
+  | RepEv
   | FfEv
   | PwrEv
   | FfStatusEv
