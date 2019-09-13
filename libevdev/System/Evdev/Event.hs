@@ -662,6 +662,7 @@ module System.Evdev.Event
         MuteDeviceSw,
         PenInsertedSw
         ),
+    encodeSw,
     Msc
       ( SerialMsc,
         PulseledMsc,
@@ -2012,6 +2013,25 @@ data Sw
   | LineinInsertSw
   | MuteDeviceSw
   | PenInsertedSw
+
+encodeSw :: Sw -> Word16
+encodeSw LidSw = [C.pure| uint16_t { SW_LID } |]
+encodeSw TabletModeSw = [C.pure| uint16_t { SW_TABLET_MODE } |]
+encodeSw HeadphoneInsertSw = [C.pure| uint16_t { SW_HEADPHONE_INSERT } |]
+encodeSw RfkillAllSw = [C.pure| uint16_t { SW_RFKILL_ALL } |]
+encodeSw RadioSw = [C.pure| uint16_t { SW_RADIO } |]
+encodeSw MicrophoneInsertSw = [C.pure| uint16_t { SW_MICROPHONE_INSERT } |]
+encodeSw DockSw = [C.pure| uint16_t { SW_DOCK } |]
+encodeSw LineoutInsertSw = [C.pure| uint16_t { SW_LINEOUT_INSERT } |]
+encodeSw JackPhysicalInsertSw = [C.pure| uint16_t { SW_JACK_PHYSICAL_INSERT } |]
+encodeSw VideooutInsertSw = [C.pure| uint16_t { SW_VIDEOOUT_INSERT } |]
+encodeSw CameraLensCoverSw = [C.pure| uint16_t { SW_CAMERA_LENS_COVER } |]
+encodeSw KeypadSlideSw = [C.pure| uint16_t { SW_KEYPAD_SLIDE } |]
+encodeSw FrontProximitySw = [C.pure| uint16_t { SW_FRONT_PROXIMITY } |]
+encodeSw RotateLockSw = [C.pure| uint16_t { SW_ROTATE_LOCK } |]
+encodeSw LineinInsertSw = [C.pure| uint16_t { SW_LINEIN_INSERT } |]
+encodeSw MuteDeviceSw = [C.pure| uint16_t { SW_MUTE_DEVICE } |]
+encodeSw PenInsertedSw = [C.pure| uint16_t { SW_PEN_INSERTED } |]
 
 data Msc
   = SerialMsc
