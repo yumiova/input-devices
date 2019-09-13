@@ -17,6 +17,7 @@ module System.Evdev.Event
         FfStatusEv
         ),
     Syn (ReportSyn, ConfigSyn, MtReportSyn, DroppedSyn),
+    decodeSyn,
     encodeSyn,
     Key
       ( ReservedKey,
@@ -735,6 +736,13 @@ data Syn
   | MtReportSyn
   | DroppedSyn
   deriving (Bounded, Enum)
+
+decodeSyn :: Word16 -> Maybe Syn
+decodeSyn code = getFirst (foldMap (First . match) [minBound .. maxBound])
+  where
+    match syn
+      | encodeSyn syn == code = Just syn
+      | otherwise = Nothing
 
 encodeSyn :: Syn -> Word16
 encodeSyn ReportSyn = [C.pure| uint16_t { SYN_REPORT } |]
