@@ -672,6 +672,7 @@ module System.Evdev.Event
         ScanMsc,
         TimestampMsc
         ),
+    encodeMsc,
     Led
       ( NumlLed,
         CapslLed,
@@ -2049,6 +2050,14 @@ data Msc
   | RawMsc
   | ScanMsc
   | TimestampMsc
+
+encodeMsc :: Msc -> Word16
+encodeMsc SerialMsc = [C.pure| uint16_t { MSC_SERIAL } |]
+encodeMsc PulseledMsc = [C.pure| uint16_t { MSC_PULSELED } |]
+encodeMsc GestureMsc = [C.pure| uint16_t { MSC_GESTURE } |]
+encodeMsc RawMsc = [C.pure| uint16_t { MSC_RAW } |]
+encodeMsc ScanMsc = [C.pure| uint16_t { MSC_SCAN } |]
+encodeMsc TimestampMsc = [C.pure| uint16_t { MSC_TIMESTAMP } |]
 
 data Led
   = NumlLed
