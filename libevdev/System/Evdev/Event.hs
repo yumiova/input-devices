@@ -757,7 +757,7 @@ data Ev
   | FfEv
   | PwrEv
   | FfStatusEv
-  deriving (Eq, Ord, Show, Read)
+  deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 data Syn
   = ReportSyn
