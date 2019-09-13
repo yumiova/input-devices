@@ -263,6 +263,80 @@ module System.Evdev.Event
         WimaxKey,
         RfkillKey,
         MicmuteKey,
+        MiscBtn,
+        ZeroBtn,
+        OneBtn,
+        TwoBtn,
+        ThreeBtn,
+        FourBtn,
+        FiveBtn,
+        SixBtn,
+        SevenBtn,
+        EightBtn,
+        NineBtn,
+        MouseBtn,
+        LeftBtn,
+        RightBtn,
+        MiddleBtn,
+        SideBtn,
+        ExtraBtn,
+        ForwardBtn,
+        BackBtn,
+        TaskBtn,
+        JoystickBtn,
+        TriggerBtn,
+        ThumbBtn,
+        Thumb2Btn,
+        TopBtn,
+        Top2Btn,
+        PinkieBtn,
+        BaseBtn,
+        Base2Btn,
+        Base3Btn,
+        Base4Btn,
+        Base5Btn,
+        Base6Btn,
+        DeadBtn,
+        GamepadBtn,
+        SouthBtn,
+        ABtn,
+        EastBtn,
+        BBtn,
+        CBtn,
+        NorthBtn,
+        XBtn,
+        WestBtn,
+        YBtn,
+        ZBtn,
+        TlBtn,
+        TrBtn,
+        Tl2Btn,
+        Tr2Btn,
+        SelectBtn,
+        StartBtn,
+        ModeBtn,
+        ThumblBtn,
+        ThumbrBtn,
+        DigiBtn,
+        ToolPenBtn,
+        ToolRubberBtn,
+        ToolBrushBtn,
+        ToolPencilBtn,
+        ToolAirbrushBtn,
+        ToolFingerBtn,
+        ToolMouseBtn,
+        ToolLensBtn,
+        ToolQuinttapBtn,
+        Stylus3Btn,
+        TouchBtn,
+        StylusBtn,
+        Stylus2Btn,
+        ToolDoubletapBtn,
+        ToolTripletapBtn,
+        ToolQuadtapBtn,
+        WheelBtn,
+        GearDownBtn,
+        GearUpBtn,
         OkKey,
         SelectKey,
         GotoKey,
@@ -423,6 +497,10 @@ module System.Evdev.Event
         AttendantOffKey,
         AttendantToggleKey,
         LightsToggleKey,
+        DpadUpBtn,
+        DpadDownBtn,
+        DpadLeftBtn,
+        DpadRightBtn,
         AlsToggleKey,
         RotateLockToggleKey,
         ButtonconfigKey,
@@ -460,7 +538,48 @@ module System.Evdev.Event
         FastreverseKey,
         SlowreverseKey,
         DataKey,
-        OnscreenKeyboardKey
+        OnscreenKeyboardKey,
+        TriggerHappyBtn,
+        TriggerHappy1Btn,
+        TriggerHappy2Btn,
+        TriggerHappy3Btn,
+        TriggerHappy4Btn,
+        TriggerHappy5Btn,
+        TriggerHappy6Btn,
+        TriggerHappy7Btn,
+        TriggerHappy8Btn,
+        TriggerHappy9Btn,
+        TriggerHappy10Btn,
+        TriggerHappy11Btn,
+        TriggerHappy12Btn,
+        TriggerHappy13Btn,
+        TriggerHappy14Btn,
+        TriggerHappy15Btn,
+        TriggerHappy16Btn,
+        TriggerHappy17Btn,
+        TriggerHappy18Btn,
+        TriggerHappy19Btn,
+        TriggerHappy20Btn,
+        TriggerHappy21Btn,
+        TriggerHappy22Btn,
+        TriggerHappy23Btn,
+        TriggerHappy24Btn,
+        TriggerHappy25Btn,
+        TriggerHappy26Btn,
+        TriggerHappy27Btn,
+        TriggerHappy28Btn,
+        TriggerHappy29Btn,
+        TriggerHappy30Btn,
+        TriggerHappy31Btn,
+        TriggerHappy32Btn,
+        TriggerHappy33Btn,
+        TriggerHappy34Btn,
+        TriggerHappy35Btn,
+        TriggerHappy36Btn,
+        TriggerHappy37Btn,
+        TriggerHappy38Btn,
+        TriggerHappy39Btn,
+        TriggerHappy40Btn
         ),
     Rel
       ( XRel,
@@ -842,6 +961,80 @@ data Key
   | WimaxKey
   | RfkillKey
   | MicmuteKey
+  | MiscBtn
+  | ZeroBtn
+  | OneBtn
+  | TwoBtn
+  | ThreeBtn
+  | FourBtn
+  | FiveBtn
+  | SixBtn
+  | SevenBtn
+  | EightBtn
+  | NineBtn
+  | MouseBtn
+  | LeftBtn
+  | RightBtn
+  | MiddleBtn
+  | SideBtn
+  | ExtraBtn
+  | ForwardBtn
+  | BackBtn
+  | TaskBtn
+  | JoystickBtn
+  | TriggerBtn
+  | ThumbBtn
+  | Thumb2Btn
+  | TopBtn
+  | Top2Btn
+  | PinkieBtn
+  | BaseBtn
+  | Base2Btn
+  | Base3Btn
+  | Base4Btn
+  | Base5Btn
+  | Base6Btn
+  | DeadBtn
+  | GamepadBtn
+  | SouthBtn
+  | ABtn
+  | EastBtn
+  | BBtn
+  | CBtn
+  | NorthBtn
+  | XBtn
+  | WestBtn
+  | YBtn
+  | ZBtn
+  | TlBtn
+  | TrBtn
+  | Tl2Btn
+  | Tr2Btn
+  | SelectBtn
+  | StartBtn
+  | ModeBtn
+  | ThumblBtn
+  | ThumbrBtn
+  | DigiBtn
+  | ToolPenBtn
+  | ToolRubberBtn
+  | ToolBrushBtn
+  | ToolPencilBtn
+  | ToolAirbrushBtn
+  | ToolFingerBtn
+  | ToolMouseBtn
+  | ToolLensBtn
+  | ToolQuinttapBtn
+  | Stylus3Btn
+  | TouchBtn
+  | StylusBtn
+  | Stylus2Btn
+  | ToolDoubletapBtn
+  | ToolTripletapBtn
+  | ToolQuadtapBtn
+  | WheelBtn
+  | GearDownBtn
+  | GearUpBtn
   | OkKey
   | SelectKey
   | GotoKey
@@ -1002,6 +1195,10 @@ data Key
   | AttendantOffKey
   | AttendantToggleKey
   | LightsToggleKey
+  | DpadUpBtn
+  | DpadDownBtn
+  | DpadLeftBtn
+  | DpadRightBtn
   | AlsToggleKey
   | RotateLockToggleKey
   | ButtonconfigKey
@@ -1040,6 +1237,47 @@ data Key
   | SlowreverseKey
   | DataKey
   | OnscreenKeyboardKey
+  | TriggerHappyBtn
+  | TriggerHappy1Btn
+  | TriggerHappy2Btn
+  | TriggerHappy3Btn
+  | TriggerHappy4Btn
+  | TriggerHappy5Btn
+  | TriggerHappy6Btn
+  | TriggerHappy7Btn
+  | TriggerHappy8Btn
+  | TriggerHappy9Btn
+  | TriggerHappy10Btn
+  | TriggerHappy11Btn
+  | TriggerHappy12Btn
+  | TriggerHappy13Btn
+  | TriggerHappy14Btn
+  | TriggerHappy15Btn
+  | TriggerHappy16Btn
+  | TriggerHappy17Btn
+  | TriggerHappy18Btn
+  | TriggerHappy19Btn
+  | TriggerHappy20Btn
+  | TriggerHappy21Btn
+  | TriggerHappy22Btn
+  | TriggerHappy23Btn
+  | TriggerHappy24Btn
+  | TriggerHappy25Btn
+  | TriggerHappy26Btn
+  | TriggerHappy27Btn
+  | TriggerHappy28Btn
+  | TriggerHappy29Btn
+  | TriggerHappy30Btn
+  | TriggerHappy31Btn
+  | TriggerHappy32Btn
+  | TriggerHappy33Btn
+  | TriggerHappy34Btn
+  | TriggerHappy35Btn
+  | TriggerHappy36Btn
+  | TriggerHappy37Btn
+  | TriggerHappy38Btn
+  | TriggerHappy39Btn
+  | TriggerHappy40Btn
 
 data Rel
   = XRel
