@@ -19,7 +19,10 @@ source-repository head
 library libevdev
   default-language:  Haskell2010
   exposed-modules:   System.Evdev.Event
-  build-depends:     base ^>=4.12.0.0
+  build-depends:
+      base      ^>=4.12.0.0
+    , inline-c  ^>=0.7.0.1
+
   hs-source-dirs:    libevdev
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns
