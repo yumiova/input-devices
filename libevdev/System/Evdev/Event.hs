@@ -593,11 +593,9 @@ module System.Evdev.Event
         HwheelRel,
         DialRel,
         WheelRel,
-        MiscRel,
-        ReservedRel,
-        WheelHiResRel,
-        HwheelHiResRel
+        MiscRel
         ),
+    encodeRel,
     Abs
       ( XAbs,
         YAbs,
@@ -1875,9 +1873,18 @@ data Rel
   | DialRel
   | WheelRel
   | MiscRel
-  | ReservedRel
-  | WheelHiResRel
-  | HwheelHiResRel
+
+encodeRel :: Rel -> Word16
+encodeRel XRel = [C.pure| uint16_t { REL_X } |]
+encodeRel YRel = [C.pure| uint16_t { REL_Y } |]
+encodeRel ZRel = [C.pure| uint16_t { REL_Z } |]
+encodeRel RxRel = [C.pure| uint16_t { REL_RX } |]
+encodeRel RyRel = [C.pure| uint16_t { REL_RY } |]
+encodeRel RzRel = [C.pure| uint16_t { REL_RZ } |]
+encodeRel HwheelRel = [C.pure| uint16_t { REL_HWHEEL } |]
+encodeRel DialRel = [C.pure| uint16_t { REL_DIAL } |]
+encodeRel WheelRel = [C.pure| uint16_t { REL_WHEEL } |]
+encodeRel MiscRel = [C.pure| uint16_t { REL_MISC } |]
 
 data Abs
   = XAbs
