@@ -693,6 +693,7 @@ module System.Evdev.Event
       ( DelayRep,
         PeriodRep
         ),
+    encodeRep,
     Snd
       ( ClickSnd,
         BellSnd,
@@ -2107,6 +2108,10 @@ encodeLed ChargingLed = [C.pure| uint16_t { LED_CHARGING } |]
 data Rep
   = DelayRep
   | PeriodRep
+
+encodeRep :: Rep -> Word16
+encodeRep DelayRep = [C.pure| uint16_t { REP_DELAY } |]
+encodeRep PeriodRep = [C.pure| uint16_t { REP_PERIOD } |]
 
 data Snd
   = ClickSnd
