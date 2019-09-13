@@ -2127,6 +2127,7 @@ data Snd
   = ClickSnd
   | BellSnd
   | ToneSnd
+  deriving (Bounded, Enum)
 
 encodeSnd :: Snd -> Word16
 encodeSnd ClickSnd = [C.pure| uint16_t { SND_CLICK } |]
