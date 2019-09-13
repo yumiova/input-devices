@@ -540,6 +540,14 @@ module System.Evdev.Event
         LineinInsertSw,
         MuteDeviceSw,
         PenInsertedSw
+        ),
+    Msc
+      ( SerialMsc,
+        PulseledMsc,
+        GestureMsc,
+        RawMsc,
+        ScanMsc,
+        TimestampMsc
         )
     )
 where
@@ -549,7 +557,7 @@ data Ev
   | KeyEv Key
   | RelEv Rel
   | AbsEv Abs
-  | MscEv
+  | MscEv Msc
   | SwEv Sw
   | LedEv
   | SndEv
@@ -1090,3 +1098,11 @@ data Sw
   | LineinInsertSw
   | MuteDeviceSw
   | PenInsertedSw
+
+data Msc
+  = SerialMsc
+  | PulseledMsc
+  | GestureMsc
+  | RawMsc
+  | ScanMsc
+  | TimestampMsc
