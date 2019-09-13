@@ -699,7 +699,8 @@ module System.Evdev.Event
       ( ClickSnd,
         BellSnd,
         ToneSnd
-        )
+        ),
+    encodeSnd
     )
 where
 
@@ -2126,3 +2127,8 @@ data Snd
   = ClickSnd
   | BellSnd
   | ToneSnd
+
+encodeSnd :: Snd -> Word16
+encodeSnd ClickSnd = [C.pure| uint16_t { SND_CLICK } |]
+encodeSnd BellSnd = [C.pure| uint16_t { SND_BELL } |]
+encodeSnd ToneSnd = [C.pure| uint16_t { SND_TONE } |]
