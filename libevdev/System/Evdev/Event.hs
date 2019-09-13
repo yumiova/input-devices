@@ -581,6 +581,7 @@ module System.Evdev.Event
         TriggerHappy39Btn,
         TriggerHappy40Btn
         ),
+    decodeKey,
     encodeKey,
     Rel
       ( XRel,
@@ -693,6 +694,7 @@ module System.Evdev.Event
     )
 where
 
+import Data.Monoid (First (First, getFirst))
 import Data.Word (Word16)
 import qualified Language.C.Inline as C
 
@@ -1284,6 +1286,13 @@ data Key
   | TriggerHappy39Btn
   | TriggerHappy40Btn
   deriving (Bounded, Enum)
+
+decodeKey :: Word16 -> Maybe Key
+decodeKey code = getFirst (foldMap (First . match) [minBound .. maxBound])
+  where
+    match key
+      | encodeKey key == code = Just key
+      | otherwise = Nothing
 
 encodeKey :: Key -> Word16
 encodeKey ReservedKey = [C.pure| uint16_t { KEY_RESERVED } |]
