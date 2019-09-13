@@ -693,6 +693,7 @@ module System.Evdev.Event
       ( DelayRep,
         PeriodRep
         ),
+    decodeRep,
     encodeRep,
     Snd
       ( ClickSnd,
@@ -2109,6 +2110,13 @@ data Rep
   = DelayRep
   | PeriodRep
   deriving (Bounded, Enum)
+
+decodeRep :: Word16 -> Maybe Rep
+decodeRep code = getFirst (foldMap (First . match) [minBound .. maxBound])
+  where
+    match rep
+      | encodeRep rep == code = Just rep
+      | otherwise = Nothing
 
 encodeRep :: Rep -> Word16
 encodeRep DelayRep = [C.pure| uint16_t { REP_DELAY } |]
