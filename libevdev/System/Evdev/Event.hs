@@ -687,6 +687,7 @@ module System.Evdev.Event
         MailLed,
         ChargingLed
         ),
+    encodeLed,
     Rep
       ( DelayRep,
         PeriodRep
@@ -2080,6 +2081,19 @@ data Led
   | MiscLed
   | MailLed
   | ChargingLed
+
+encodeLed :: Led -> Word16
+encodeLed NumlLed = [C.pure| uint16_t { LED_NUML } |]
+encodeLed CapslLed = [C.pure| uint16_t { LED_CAPSL } |]
+encodeLed ScrolllLed = [C.pure| uint16_t { LED_SCROLLL } |]
+encodeLed ComposeLed = [C.pure| uint16_t { LED_COMPOSE } |]
+encodeLed KanaLed = [C.pure| uint16_t { LED_KANA } |]
+encodeLed SleepLed = [C.pure| uint16_t { LED_SLEEP } |]
+encodeLed SuspendLed = [C.pure| uint16_t { LED_SUSPEND } |]
+encodeLed MuteLed = [C.pure| uint16_t { LED_MUTE } |]
+encodeLed MiscLed = [C.pure| uint16_t { LED_MISC } |]
+encodeLed MailLed = [C.pure| uint16_t { LED_MAIL } |]
+encodeLed ChargingLed = [C.pure| uint16_t { LED_CHARGING } |]
 
 data Rep
   = DelayRep
