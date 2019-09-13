@@ -30,6 +30,7 @@ module System.Evdev.Event
         PwrEv,
         FfStatusEv
         ),
+    encodeEv,
     Syn (ReportSyn, ConfigSyn, MtReportSyn, DroppedSyn),
     decodeSyn,
     encodeSyn,
@@ -758,6 +759,20 @@ data Ev
   | PwrEv
   | FfStatusEv
   deriving (Eq, Ord, Show, Read, Bounded, Enum)
+
+encodeEv :: Ev -> Word16
+encodeEv SynEv = [C.pure| uint16_t { EV_SYN } |]
+encodeEv KeyEv = [C.pure| uint16_t { EV_KEY } |]
+encodeEv RelEv = [C.pure| uint16_t { EV_REL } |]
+encodeEv AbsEv = [C.pure| uint16_t { EV_ABS } |]
+encodeEv MscEv = [C.pure| uint16_t { EV_MSC } |]
+encodeEv SwEv = [C.pure| uint16_t { EV_SW } |]
+encodeEv LedEv = [C.pure| uint16_t { EV_LED } |]
+encodeEv SndEv = [C.pure| uint16_t { EV_SND } |]
+encodeEv RepEv = [C.pure| uint16_t { EV_REP } |]
+encodeEv FfEv = [C.pure| uint16_t { EV_FF } |]
+encodeEv PwrEv = [C.pure| uint16_t { EV_PWR } |]
+encodeEv FfStatusEv = [C.pure| uint16_t { EV_FF_STATUS } |]
 
 data Syn
   = ReportSyn
