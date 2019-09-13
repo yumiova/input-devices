@@ -521,6 +521,25 @@ module System.Evdev.Event
         MtDistanceAbs,
         MtToolXAbs,
         MtToolYAbs
+        ),
+    Sw
+      ( LidSw,
+        TabletModeSw,
+        HeadphoneInsertSw,
+        RfkillAllSw,
+        RadioSw,
+        MicrophoneInsertSw,
+        DockSw,
+        LineoutInsertSw,
+        JackPhysicalInsertSw,
+        VideooutInsertSw,
+        CameraLensCoverSw,
+        KeypadSlideSw,
+        FrontProximitySw,
+        RotateLockSw,
+        LineinInsertSw,
+        MuteDeviceSw,
+        PenInsertedSw
         )
     )
 where
@@ -531,7 +550,7 @@ data Ev
   | RelEv Rel
   | AbsEv Abs
   | MscEv
-  | SwEv
+  | SwEv Sw
   | LedEv
   | SndEv
   | RepEv
@@ -1052,3 +1071,22 @@ data Abs
   | MtDistanceAbs
   | MtToolXAbs
   | MtToolYAbs
+
+data Sw
+  = LidSw
+  | TabletModeSw
+  | HeadphoneInsertSw
+  | RfkillAllSw
+  | RadioSw
+  | MicrophoneInsertSw
+  | DockSw
+  | LineoutInsertSw
+  | JackPhysicalInsertSw
+  | VideooutInsertSw
+  | CameraLensCoverSw
+  | KeypadSlideSw
+  | FrontProximitySw
+  | RotateLockSw
+  | LineinInsertSw
+  | MuteDeviceSw
+  | PenInsertedSw
