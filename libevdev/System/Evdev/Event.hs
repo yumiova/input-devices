@@ -528,8 +528,8 @@ where
 data Ev
   = SynEv Syn
   | KeyEv Key
-  | RelEv
-  | AbsEv
+  | RelEv Rel
+  | AbsEv Abs
   | MscEv
   | SwEv
   | LedEv
