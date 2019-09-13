@@ -1939,6 +1939,7 @@ data Abs
   | MtDistanceAbs
   | MtToolXAbs
   | MtToolYAbs
+  deriving (Bounded, Enum)
 
 encodeAbs :: Abs -> Word16
 encodeAbs XAbs = [C.pure| uint16_t { ABS_X } |]
