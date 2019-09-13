@@ -11,8 +11,7 @@ module System.Evdev.Event
         RepEv,
         FfEv,
         PwrEv,
-        FfStatusEv,
-        MaxEv
+        FfStatusEv
         ),
     Syn (ReportSyn, ConfigSyn, MtReportSyn, DroppedSyn),
     Key
@@ -587,7 +586,6 @@ data Ev
   | FfEv
   | PwrEv
   | FfStatusEv
-  | MaxEv
 
 data Syn
   = ReportSyn
