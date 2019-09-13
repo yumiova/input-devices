@@ -1283,6 +1283,7 @@ data Key
   | TriggerHappy38Btn
   | TriggerHappy39Btn
   | TriggerHappy40Btn
+  deriving (Bounded, Enum)
 
 encodeKey :: Key -> Word16
 encodeKey ReservedKey = [C.pure| uint16_t { KEY_RESERVED } |]
