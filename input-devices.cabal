@@ -23,8 +23,11 @@ library libevdev
       base      ^>=4.12.0.0
     , inline-c  ^>=0.7.0.1
 
+  other-extensions:
+    QuasiQuotes
+    TemplateHaskell
+
   hs-source-dirs:    libevdev
-  other-extensions:  QuasiQuotes
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns
     -Wincomplete-record-updates -Wredundant-constraints
