@@ -565,6 +565,11 @@ module System.Evdev.Event
     Rep
       ( DelayRep,
         PeriodRep
+        ),
+    Snd
+      ( ClickSnd,
+        BellSnd,
+        ToneSnd
         )
     )
 where
@@ -577,7 +582,7 @@ data Ev
   | MscEv Msc
   | SwEv Sw
   | LedEv Led
-  | SndEv
+  | SndEv Snd
   | RepEv Rep
   | FfEv
   | PwrEv
@@ -1140,3 +1145,8 @@ data Led
 data Rep
   = DelayRep
   | PeriodRep
+
+data Snd
+  = ClickSnd
+  | BellSnd
+  | ToneSnd
