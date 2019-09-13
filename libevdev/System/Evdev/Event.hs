@@ -2013,6 +2013,7 @@ data Sw
   | LineinInsertSw
   | MuteDeviceSw
   | PenInsertedSw
+  deriving (Bounded, Enum)
 
 encodeSw :: Sw -> Word16
 encodeSw LidSw = [C.pure| uint16_t { SW_LID } |]
