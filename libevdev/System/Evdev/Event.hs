@@ -548,6 +548,19 @@ module System.Evdev.Event
         RawMsc,
         ScanMsc,
         TimestampMsc
+        ),
+    Led
+      ( NumlLed,
+        CapslLed,
+        ScrolllLed,
+        ComposeLed,
+        KanaLed,
+        SleepLed,
+        SuspendLed,
+        MuteLed,
+        MiscLed,
+        MailLed,
+        ChargingLed
         )
     )
 where
@@ -559,7 +572,7 @@ data Ev
   | AbsEv Abs
   | MscEv Msc
   | SwEv Sw
-  | LedEv
+  | LedEv Led
   | SndEv
   | RepEv
   | FfEv
@@ -1106,3 +1119,16 @@ data Msc
   | RawMsc
   | ScanMsc
   | TimestampMsc
+
+data Led
+  = NumlLed
+  | CapslLed
+  | ScrolllLed
+  | ComposeLed
+  | KanaLed
+  | SleepLed
+  | SuspendLed
+  | MuteLed
+  | MiscLed
+  | MailLed
+  | ChargingLed
