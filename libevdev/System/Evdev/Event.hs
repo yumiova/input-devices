@@ -595,6 +595,7 @@ module System.Evdev.Event
         WheelRel,
         MiscRel
         ),
+    decodeRel,
     encodeRel,
     Abs
       ( XAbs,
@@ -1874,6 +1875,13 @@ data Rel
   | WheelRel
   | MiscRel
   deriving (Bounded, Enum)
+
+decodeRel :: Word16 -> Maybe Rel
+decodeRel code = getFirst (foldMap (First . match) [minBound .. maxBound])
+  where
+    match rel
+      | encodeRel rel == code = Just rel
+      | otherwise = Nothing
 
 encodeRel :: Rel -> Word16
 encodeRel XRel = [C.pure| uint16_t { REL_X } |]
