@@ -30,6 +30,7 @@ module System.Evdev.Event
         PwrEv,
         FfStatusEv
         ),
+    decodeEv,
     encodeEv,
     Syn (ReportSyn, ConfigSyn, MtReportSyn, DroppedSyn),
     decodeSyn,
@@ -759,6 +760,13 @@ data Ev
   | PwrEv
   | FfStatusEv
   deriving (Eq, Ord, Show, Read, Bounded, Enum)
+
+decodeEv :: Word16 -> Maybe Ev
+decodeEv code = getFirst (foldMap (First . match) [minBound .. maxBound])
+  where
+    match ev
+      | encodeEv ev == code = Just ev
+      | otherwise = Nothing
 
 encodeEv :: Ev -> Word16
 encodeEv SynEv = [C.pure| uint16_t { EV_SYN } |]
