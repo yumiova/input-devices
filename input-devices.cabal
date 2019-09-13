@@ -24,6 +24,7 @@ library libevdev
     , inline-c  ^>=0.7.0.1
 
   hs-source-dirs:    libevdev
+  other-extensions:  QuasiQuotes
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns
     -Wincomplete-record-updates -Wredundant-constraints
