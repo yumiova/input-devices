@@ -2050,6 +2050,7 @@ data Msc
   | RawMsc
   | ScanMsc
   | TimestampMsc
+  deriving (Bounded, Enum)
 
 encodeMsc :: Msc -> Word16
 encodeMsc SerialMsc = [C.pure| uint16_t { MSC_SERIAL } |]
