@@ -2108,6 +2108,7 @@ encodeLed ChargingLed = [C.pure| uint16_t { LED_CHARGING } |]
 data Rep
   = DelayRep
   | PeriodRep
+  deriving (Bounded, Enum)
 
 encodeRep :: Rep -> Word16
 encodeRep DelayRep = [C.pure| uint16_t { REP_DELAY } |]
