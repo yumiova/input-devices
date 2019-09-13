@@ -662,6 +662,7 @@ module System.Evdev.Event
         MuteDeviceSw,
         PenInsertedSw
         ),
+    decodeSw,
     encodeSw,
     Msc
       ( SerialMsc,
@@ -2014,6 +2015,13 @@ data Sw
   | MuteDeviceSw
   | PenInsertedSw
   deriving (Bounded, Enum)
+
+decodeSw :: Word16 -> Maybe Sw
+decodeSw code = getFirst (foldMap (First . match) [minBound .. maxBound])
+  where
+    match sw
+      | encodeSw sw == code = Just sw
+      | otherwise = Nothing
 
 encodeSw :: Sw -> Word16
 encodeSw LidSw = [C.pure| uint16_t { SW_LID } |]
