@@ -641,6 +641,7 @@ module System.Evdev.Event
         MtToolXAbs,
         MtToolYAbs
         ),
+    encodeAbs,
     Sw
       ( LidSw,
         TabletModeSw,
@@ -1938,6 +1939,50 @@ data Abs
   | MtDistanceAbs
   | MtToolXAbs
   | MtToolYAbs
+
+encodeAbs :: Abs -> Word16
+encodeAbs XAbs = [C.pure| uint16_t { ABS_X } |]
+encodeAbs YAbs = [C.pure| uint16_t { ABS_Y } |]
+encodeAbs ZAbs = [C.pure| uint16_t { ABS_Z } |]
+encodeAbs RxAbs = [C.pure| uint16_t { ABS_RX } |]
+encodeAbs RyAbs = [C.pure| uint16_t { ABS_RY } |]
+encodeAbs RzAbs = [C.pure| uint16_t { ABS_RZ } |]
+encodeAbs ThrottleAbs = [C.pure| uint16_t { ABS_THROTTLE } |]
+encodeAbs RudderAbs = [C.pure| uint16_t { ABS_RUDDER } |]
+encodeAbs WheelAbs = [C.pure| uint16_t { ABS_WHEEL } |]
+encodeAbs GasAbs = [C.pure| uint16_t { ABS_GAS } |]
+encodeAbs BrakeAbs = [C.pure| uint16_t { ABS_BRAKE } |]
+encodeAbs Hat0xAbs = [C.pure| uint16_t { ABS_HAT0X } |]
+encodeAbs Hat0yAbs = [C.pure| uint16_t { ABS_HAT0Y } |]
+encodeAbs Hat1xAbs = [C.pure| uint16_t { ABS_HAT1X } |]
+encodeAbs Hat1yAbs = [C.pure| uint16_t { ABS_HAT1Y } |]
+encodeAbs Hat2xAbs = [C.pure| uint16_t { ABS_HAT2X } |]
+encodeAbs Hat2yAbs = [C.pure| uint16_t { ABS_HAT2Y } |]
+encodeAbs Hat3xAbs = [C.pure| uint16_t { ABS_HAT3X } |]
+encodeAbs Hat3yAbs = [C.pure| uint16_t { ABS_HAT3Y } |]
+encodeAbs PressureAbs = [C.pure| uint16_t { ABS_PRESSURE } |]
+encodeAbs DistanceAbs = [C.pure| uint16_t { ABS_DISTANCE } |]
+encodeAbs TiltXAbs = [C.pure| uint16_t { ABS_TILT_X } |]
+encodeAbs TiltYAbs = [C.pure| uint16_t { ABS_TILT_Y } |]
+encodeAbs ToolWidthAbs = [C.pure| uint16_t { ABS_TOOL_WIDTH } |]
+encodeAbs VolumeAbs = [C.pure| uint16_t { ABS_VOLUME } |]
+encodeAbs MiscAbs = [C.pure| uint16_t { ABS_MISC } |]
+encodeAbs ReservedAbs = [C.pure| uint16_t { ABS_RESERVED } |]
+encodeAbs MtSlotAbs = [C.pure| uint16_t { ABS_MT_SLOT } |]
+encodeAbs MtTouchMajorAbs = [C.pure| uint16_t { ABS_MT_TOUCH_MAJOR } |]
+encodeAbs MtTouchMinorAbs = [C.pure| uint16_t { ABS_MT_TOUCH_MINOR } |]
+encodeAbs MtWidthMajorAbs = [C.pure| uint16_t { ABS_MT_WIDTH_MAJOR } |]
+encodeAbs MtWidthMinorAbs = [C.pure| uint16_t { ABS_MT_WIDTH_MINOR } |]
+encodeAbs MtOrientationAbs = [C.pure| uint16_t { ABS_MT_ORIENTATION } |]
+encodeAbs MtPositionXAbs = [C.pure| uint16_t { ABS_MT_POSITION_X } |]
+encodeAbs MtPositionYAbs = [C.pure| uint16_t { ABS_MT_POSITION_Y } |]
+encodeAbs MtToolTypeAbs = [C.pure| uint16_t { ABS_MT_TOOL_TYPE } |]
+encodeAbs MtBlobIdAbs = [C.pure| uint16_t { ABS_MT_BLOB_ID } |]
+encodeAbs MtTrackingIdAbs = [C.pure| uint16_t { ABS_MT_TRACKING_ID } |]
+encodeAbs MtPressureAbs = [C.pure| uint16_t { ABS_MT_PRESSURE } |]
+encodeAbs MtDistanceAbs = [C.pure| uint16_t { ABS_MT_DISTANCE } |]
+encodeAbs MtToolXAbs = [C.pure| uint16_t { ABS_MT_TOOL_X } |]
+encodeAbs MtToolYAbs = [C.pure| uint16_t { ABS_MT_TOOL_Y } |]
 
 data Sw
   = LidSw
