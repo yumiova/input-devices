@@ -687,6 +687,7 @@ module System.Evdev.Event
         MailLed,
         ChargingLed
         ),
+    decodeLed,
     encodeLed,
     Rep
       ( DelayRep,
@@ -2082,6 +2083,13 @@ data Led
   | MailLed
   | ChargingLed
   deriving (Bounded, Enum)
+
+decodeLed :: Word16 -> Maybe Led
+decodeLed code = getFirst (foldMap (First . match) [minBound .. maxBound])
+  where
+    match led
+      | encodeLed led == code = Just led
+      | otherwise = Nothing
 
 encodeLed :: Led -> Word16
 encodeLed NumlLed = [C.pure| uint16_t { LED_NUML } |]
