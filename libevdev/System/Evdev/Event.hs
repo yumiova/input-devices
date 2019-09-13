@@ -729,13 +729,14 @@ data Ev
   | FfEv
   | PwrEv
   | FfStatusEv
+  deriving (Eq, Ord, Show, Read)
 
 data Syn
   = ReportSyn
   | ConfigSyn
   | MtReportSyn
   | DroppedSyn
-  deriving (Bounded, Enum)
+  deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 decodeSyn :: Word16 -> Maybe Syn
 decodeSyn code = getFirst (foldMap (First . match) [minBound .. maxBound])
@@ -1313,7 +1314,7 @@ data Key
   | TriggerHappy38Btn
   | TriggerHappy39Btn
   | TriggerHappy40Btn
-  deriving (Bounded, Enum)
+  deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 decodeKey :: Word16 -> Maybe Key
 decodeKey code = getFirst (foldMap (First . match) [minBound .. maxBound])
@@ -1903,7 +1904,7 @@ data Rel
   | DialRel
   | WheelRel
   | MiscRel
-  deriving (Bounded, Enum)
+  deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 decodeRel :: Word16 -> Maybe Rel
 decodeRel code = getFirst (foldMap (First . match) [minBound .. maxBound])
@@ -1967,7 +1968,7 @@ data Abs
   | MtDistanceAbs
   | MtToolXAbs
   | MtToolYAbs
-  deriving (Bounded, Enum)
+  deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 decodeAbs :: Word16 -> Maybe Abs
 decodeAbs code = getFirst (foldMap (First . match) [minBound .. maxBound])
@@ -2038,7 +2039,7 @@ data Sw
   | LineinInsertSw
   | MuteDeviceSw
   | PenInsertedSw
-  deriving (Bounded, Enum)
+  deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 decodeSw :: Word16 -> Maybe Sw
 decodeSw code = getFirst (foldMap (First . match) [minBound .. maxBound])
@@ -2073,7 +2074,7 @@ data Msc
   | RawMsc
   | ScanMsc
   | TimestampMsc
-  deriving (Bounded, Enum)
+  deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 decodeMsc :: Word16 -> Maybe Msc
 decodeMsc code = getFirst (foldMap (First . match) [minBound .. maxBound])
@@ -2102,7 +2103,7 @@ data Led
   | MiscLed
   | MailLed
   | ChargingLed
-  deriving (Bounded, Enum)
+  deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 decodeLed :: Word16 -> Maybe Led
 decodeLed code = getFirst (foldMap (First . match) [minBound .. maxBound])
@@ -2127,7 +2128,7 @@ encodeLed ChargingLed = [C.pure| uint16_t { LED_CHARGING } |]
 data Rep
   = DelayRep
   | PeriodRep
-  deriving (Bounded, Enum)
+  deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 decodeRep :: Word16 -> Maybe Rep
 decodeRep code = getFirst (foldMap (First . match) [minBound .. maxBound])
@@ -2144,7 +2145,7 @@ data Snd
   = ClickSnd
   | BellSnd
   | ToneSnd
-  deriving (Bounded, Enum)
+  deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
 decodeSnd :: Word16 -> Maybe Snd
 decodeSnd code = getFirst (foldMap (First . match) [minBound .. maxBound])
