@@ -734,6 +734,7 @@ data Syn
   | ConfigSyn
   | MtReportSyn
   | DroppedSyn
+  deriving (Bounded, Enum)
 
 encodeSyn :: Syn -> Word16
 encodeSyn ReportSyn = [C.pure| uint16_t { SYN_REPORT } |]
