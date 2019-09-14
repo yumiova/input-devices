@@ -21,7 +21,10 @@ library libevdev
   build-depends:    base ^>=4.12.0.0
   other-modules:    System.Evdev.Time
   hs-source-dirs:   libevdev
-  other-extensions: ViewPatterns
+  other-extensions:
+    QuasiQuotes
+    ViewPatterns
+
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns
     -Wincomplete-record-updates -Wredundant-constraints
