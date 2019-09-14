@@ -20,3 +20,4 @@ data InputEvent
         inputEventCode :: Word16,
         inputEventValue :: Int32
         }
+  deriving (Eq, Ord, Show, Read)
