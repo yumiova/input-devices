@@ -1,5 +1,6 @@
 module System.Evdev
-  ( InputEvent
+  ( Timeval (Timeval, timevalSec, timevalUsec),
+    InputEvent
       ( InputEvent,
         inputEventTime,
         inputEventType,
@@ -11,7 +12,7 @@ where
 
 import Data.Int (Int32)
 import Data.Word (Word16)
-import System.Evdev.Time (Timeval)
+import System.Evdev.Time (Timeval (Timeval, timevalSec, timevalUsec))
 
 data InputEvent
   = InputEvent
