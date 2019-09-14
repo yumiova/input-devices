@@ -23,9 +23,9 @@ data Timeval = Timeval {timevalSec :: CTime, timevalUsec :: CSUSeconds}
 
 instance Storable Timeval where
 
-  alignment _ = fromIntegral [C.pure| int { sizeof(struct timeval) } |]
+  sizeOf _ = fromIntegral [C.pure| int { sizeof(struct timeval) } |]
 
-  sizeOf _ = fromIntegral [C.pure| int { __alignof__(struct timeval) } |]
+  alignment _ = fromIntegral [C.pure| int { __alignof__(struct timeval) } |]
 
   peek (castPtr -> source) =
     Timeval
