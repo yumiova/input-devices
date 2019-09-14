@@ -23,6 +23,7 @@ library libevdev
   hs-source-dirs:   libevdev
   other-extensions:
     QuasiQuotes
+    TemplateHaskell
     ViewPatterns
 
   ghc-options:
