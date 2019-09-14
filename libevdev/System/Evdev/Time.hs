@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ViewPatterns #-}
@@ -8,10 +9,12 @@ module System.Evdev.Time
     )
 where
 
+import qualified Data.Map as Map (singleton)
 import Foreign (Storable (alignment, peek, poke, sizeOf), castPtr)
 import Foreign.C (CInt (CInt), CSUSeconds (CSUSeconds), CTime (CTime))
 import qualified Language.C.Inline as C (block, exp, include, pure)
-import Language.C.Inline.Context (Context)
+import Language.C.Inline.Context (Context (ctxTypesTable))
+import Language.C.Types (TypeSpecifier (Struct))
 
 C.include "<sys/time.h>"
 
@@ -40,4 +43,5 @@ instance Storable Timeval where
     } |]
 
 timevalCtx :: Context
-timevalCtx = mempty
+timevalCtx =
+  mempty {ctxTypesTable = Map.singleton (Struct "timeval") [t|Timeval|]}
