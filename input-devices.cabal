@@ -26,6 +26,7 @@ library libevdev
   other-modules:     System.Evdev.Time
   hs-source-dirs:    libevdev
   other-extensions:
+    OverloadedStrings
     QuasiQuotes
     TemplateHaskell
     ViewPatterns
