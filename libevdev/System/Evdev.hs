@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ViewPatterns #-}
@@ -10,11 +11,13 @@ module System.Evdev
         inputEventType,
         inputEventCode,
         inputEventValue
-        )
+        ),
+    evdevCtx
     )
 where
 
 import Data.Int (Int32)
+import qualified Data.Map as Map (singleton)
 import Data.Word (Word16)
 import Foreign (Ptr, Storable (alignment, peek, poke, sizeOf), alloca, castPtr)
 import Foreign.C (CInt (CInt))
@@ -27,6 +30,8 @@ import qualified Language.C.Inline as C
     pure,
     withPtr_
     )
+import Language.C.Inline.Context (Context (ctxTypesTable))
+import Language.C.Types (TypeSpecifier (Struct))
 import System.Evdev.Time
   ( Timeval (Timeval, timevalSec, timevalUsec),
     timevalCtx
@@ -83,3 +88,10 @@ instance Storable InputEvent where
         target->code = $(uint16_t code);
         target->value = $(int32_t value);
       } |]
+
+evdevCtx :: Context
+evdevCtx =
+  timevalCtx
+    <> mempty
+      { ctxTypesTable = Map.singleton (Struct "input_event") [t|InputEvent|]
+        }
