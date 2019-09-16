@@ -2,7 +2,8 @@ module Input.Control
   ( Control ((:<)),
     event,
     stateful,
-    control
+    control,
+    Key (Key, unKey)
     )
 where
 
@@ -39,3 +40,5 @@ control initial types codes fs =
     k delta type' code f current
       | inputEventType delta == type' && inputEventCode delta == code = f (inputEventValue delta)
       | otherwise = current
+
+newtype Key = Key {unKey :: Int32}
