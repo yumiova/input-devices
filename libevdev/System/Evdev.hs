@@ -62,21 +62,21 @@ instance Storable InputEvent where
 
   peek (castPtr -> source) = do
     (time, type', code, value) <-
-      C.withPtrs_ $ \(timePtr, typePtr, codePtr, valuePtr) ->
+      C.withPtrs_ $ \(time, type', code, value) ->
         [C.block| void {
           struct input_event *target = (struct input_event *) $(void *source);
-          *$(struct timeval *timePtr) = target->time;
-          *$(uint16_t *typePtr) = target->type;
-          *$(uint16_t *codePtr) = target->code;
-          *$(int32_t *valuePtr) = target->value;
+          *$(struct timeval *time) = target->time;
+          *$(uint16_t *type') = target->type;
+          *$(uint16_t *code) = target->code;
+          *$(int32_t *value) = target->value;
         } |]
     pure (InputEvent time type' code value)
 
   poke (castPtr -> target) (InputEvent time type' code value) =
-    marshal time $ \timePtr ->
+    marshal time $ \temporary ->
       [C.block| void {
         struct input_event *target = (struct input_event *) $(void *target);
-        target->time = *$(struct timeval *timePtr);
+        target->time = *$(struct timeval *temporary);
         target->type = $(uint16_t type');
         target->code = $(uint16_t code);
         target->value = $(int32_t value);
