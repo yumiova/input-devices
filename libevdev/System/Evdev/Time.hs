@@ -12,7 +12,7 @@ where
 import qualified Data.Map as Map (singleton)
 import Foreign (Storable (alignment, peek, poke, sizeOf), castPtr)
 import Foreign.C (CInt (CInt), CSUSeconds (CSUSeconds), CTime (CTime))
-import qualified Language.C.Inline as C (block, exp, include, pure)
+import qualified Language.C.Inline as C (block, include, pure, withPtrs_)
 import Language.C.Inline.Context (Context (ctxTypesTable))
 import Language.C.Types (TypeSpecifier (Struct))
 
@@ -27,19 +27,21 @@ instance Storable Timeval where
 
   alignment _ = fromIntegral [C.pure| int { __alignof__(struct timeval) } |]
 
-  peek (castPtr -> source) =
-    Timeval
-      <$> [C.exp| time_t {
-            ((struct timeval *) $(void *source))->tv_sec
-          } |]
-      <*> [C.exp| suseconds_t {
-            ((struct timeval *) $(void *source))->tv_usec
-          } |]
+  peek (castPtr -> source) = do
+    (sec, usec) <-
+      C.withPtrs_ $ \(secPtr, usecPtr) ->
+        [C.block| void {
+          struct timeval *timeval = (struct timeval *) $(void *source);
+          *$(time_t *secPtr) = timeval->tv_sec;
+          *$(suseconds_t *usecPtr) = timeval->tv_usec;
+        } |]
+    pure (Timeval sec usec)
 
   poke (castPtr -> target) (Timeval sec usec) =
     [C.block| void {
-      ((struct timeval *) $(void *target))->tv_sec = $(time_t sec);
-      ((struct timeval *) $(void *target))->tv_usec = $(suseconds_t usec);
+      struct timeval *timeval = (struct timeval *) $(void *target);
+      timeval->tv_sec = $(time_t sec);
+      timeval->tv_usec = $(suseconds_t usec);
     } |]
 
 timevalCtx :: Context

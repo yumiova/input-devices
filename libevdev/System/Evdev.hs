@@ -25,10 +25,9 @@ import qualified Language.C.Inline as C
   ( baseCtx,
     block,
     context,
-    exp,
     include,
     pure,
-    withPtr_
+    withPtrs_
     )
 import Language.C.Inline.Context (Context (ctxTypesTable))
 import Language.C.Types (TypeSpecifier (Struct))
@@ -64,20 +63,17 @@ instance Storable InputEvent where
 
   alignment _ = fromIntegral [C.pure| int { __alignof__(struct input_event) } |]
 
-  peek (castPtr -> source) = InputEvent <$> time <*> type' <*> code <*> value
-    where
-      time =
-        C.withPtr_ $ \out ->
-          [C.block| void {
-            *$(struct timeval *out) =
-              ((struct input_event *) $(void *source))->time;
-          } |]
-      type' =
-        [C.exp| uint16_t { ((struct input_event *) $(void *source))->type } |]
-      code =
-        [C.exp| uint16_t { ((struct input_event *) $(void *source))->code } |]
-      value =
-        [C.exp| int32_t { ((struct input_event *) $(void *source))->value } |]
+  peek (castPtr -> source) = do
+    (time, type', code, value) <-
+      C.withPtrs_ $ \(timePtr, typePtr, codePtr, valuePtr) ->
+        [C.block| void {
+          struct input_event *target = (struct input_event *) $(void *source);
+          *$(struct timeval *timePtr) = target->time;
+          *$(uint16_t *typePtr) = target->type;
+          *$(uint16_t *codePtr) = target->code;
+          *$(int32_t *valuePtr) = target->value;
+        } |]
+    pure (InputEvent time type' code value)
 
   poke (castPtr -> target) (InputEvent time type' code value) =
     marshal time $ \timePtr ->
