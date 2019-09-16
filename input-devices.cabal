@@ -24,7 +24,10 @@ library libevdev
     , containers  ^>=0.6.0.1
     , inline-c    ^>=0.7.0.1
 
-  other-modules:     System.Evdev.Time
+  other-modules:
+    System.Evdev.Input
+    System.Evdev.Time
+
   hs-source-dirs:    libevdev
   other-extensions:
     OverloadedStrings
