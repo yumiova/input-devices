@@ -42,9 +42,20 @@ library libevdev
   pkgconfig-depends: libevdev (==1.6.0 || >1.6.0) && <1.7
 
 library
-  default-language: Haskell2010
-  build-depends:    base ^>=4.12.0.0
-  hs-source-dirs:   library
+  default-language:  Haskell2010
+  exposed-modules:   Input.Control
+  build-depends:
+      base      ^>=4.12.0.0
+    , inline-c  ^>=0.7.0.1
+    , libevdev
+
+  hs-source-dirs:    library
+  other-extensions:
+    QuasiQuotes
+    TemplateHaskell
+
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns
     -Wincomplete-record-updates -Wredundant-constraints
+
+  pkgconfig-depends: libevdev (==1.6.0 || >1.6.0) && <1.7
