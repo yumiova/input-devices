@@ -15,7 +15,7 @@ module System.Evdev.Input
         inputAbsinfoFlat,
         inputAbsinfoResolution
         ),
-    evdevCtx
+    inputCtx
     )
 where
 
@@ -124,8 +124,8 @@ instance Storable InputAbsinfo where
       target->resolution = $(int32_t resolution);
     } |]
 
-evdevCtx :: Context
-evdevCtx =
+inputCtx :: Context
+inputCtx =
   timevalCtx
     <> mempty
       { ctxTypesTable =
