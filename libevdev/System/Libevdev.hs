@@ -2,7 +2,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-module System.Evdev
+module System.Libevdev
   ( Timeval (Timeval, timevalSec, timevalUsec),
     InputEvent (InputEvent, inputEventCode, inputEventTime, inputEventType, inputEventValue),
     InputAbsinfo
@@ -23,7 +23,7 @@ where
 import qualified Data.Map as Map (fromList)
 import Language.C.Inline.Context (Context (ctxTypesTable))
 import Language.C.Types (TypeSpecifier (Struct))
-import System.Evdev.Input
+import System.Libevdev.Input
   ( InputAbsinfo
       ( InputAbsinfo,
         inputAbsinfoFlat,
@@ -36,7 +36,7 @@ import System.Evdev.Input
     InputEvent (InputEvent, inputEventCode, inputEventTime, inputEventType, inputEventValue),
     inputCtx
     )
-import System.Evdev.Time
+import System.Libevdev.Time
   ( Timeval (Timeval, timevalSec, timevalUsec)
     )
 

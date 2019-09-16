@@ -3,7 +3,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ViewPatterns #-}
 
-module System.Evdev.Input
+module System.Libevdev.Input
   ( Timeval (Timeval, timevalSec, timevalUsec),
     InputEvent (InputEvent, inputEventTime, inputEventType, inputEventCode, inputEventValue),
     InputAbsinfo
@@ -27,7 +27,7 @@ import Foreign.C (CInt (CInt))
 import qualified Language.C.Inline as C (baseCtx, block, context, include, pure, withPtrs_)
 import Language.C.Inline.Context (Context (ctxTypesTable))
 import Language.C.Types (TypeSpecifier (Struct))
-import System.Evdev.Time
+import System.Libevdev.Time
   ( Timeval (Timeval, timevalSec, timevalUsec),
     timevalCtx
     )
