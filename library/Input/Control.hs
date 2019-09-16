@@ -1,16 +1,25 @@
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
+
 module Input.Control
   ( Control ((:<)),
     event,
     stateful,
     control,
-    Key (Key, unKey)
+    Key (Key, unKey),
+    key
     )
 where
 
 import Control.Applicative (liftA2)
 import Data.Int (Int32)
 import Data.Word (Word16)
+import qualified Language.C.Inline as C (include, pure)
 import System.Libevdev (InputEvent (inputEventCode, inputEventType, inputEventValue))
+
+C.include "<stdint.h>"
+
+C.include "<linux/input.h>"
 
 infixr 5 :<
 
@@ -42,3 +51,8 @@ control initial types codes fs =
       | otherwise = current
 
 newtype Key = Key {unKey :: Int32}
+
+key :: Word16 -> Control Key
+key code = control (Key 0) (pure type') (pure code) (pure Key)
+  where
+    type' = [C.pure| uint16_t { EV_KEY } |]
