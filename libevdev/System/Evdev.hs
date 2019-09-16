@@ -9,10 +9,12 @@ module System.Evdev
         inputAbsinfoMinimum,
         inputAbsinfoResolution,
         inputAbsinfoValue
-        )
+        ),
+    libevdevCtx
     )
 where
 
+import Language.C.Inline.Context (Context)
 import System.Evdev.Input
   ( InputAbsinfo
       ( InputAbsinfo,
@@ -23,8 +25,12 @@ import System.Evdev.Input
         inputAbsinfoResolution,
         inputAbsinfoValue
         ),
-    InputEvent (InputEvent, inputEventCode, inputEventTime, inputEventType, inputEventValue)
+    InputEvent (InputEvent, inputEventCode, inputEventTime, inputEventType, inputEventValue),
+    inputCtx
     )
 import System.Evdev.Time
   ( Timeval (Timeval, timevalSec, timevalUsec)
     )
+
+libevdevCtx :: Context
+libevdevCtx = inputCtx
