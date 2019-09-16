@@ -10,6 +10,7 @@ module System.Evdev
         inputAbsinfoResolution,
         inputAbsinfoValue
         ),
+    Libevdev,
     libevdevCtx
     )
 where
@@ -31,6 +32,8 @@ import System.Evdev.Input
 import System.Evdev.Time
   ( Timeval (Timeval, timevalSec, timevalUsec)
     )
+
+data Libevdev
 
 libevdevCtx :: Context
 libevdevCtx = inputCtx
