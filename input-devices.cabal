@@ -46,6 +46,7 @@ library
   exposed-modules:   Input.Control
   build-depends:
       base      ^>=4.12.0.0
+    , inline-c  ^>=0.7.0.1
     , libevdev
 
   hs-source-dirs:    library
