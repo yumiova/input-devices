@@ -44,6 +44,7 @@ import System.Evdev.Time
   ( Timeval (Timeval, timevalSec, timevalUsec),
     timevalCtx
     )
+import Prelude hiding (maximum, minimum)
 
 C.context (C.baseCtx <> timevalCtx)
 
@@ -104,6 +105,41 @@ data InputAbsinfo
         inputAbsinfoResolution :: Int32
         }
   deriving (Eq, Ord, Show, Read)
+
+instance Storable InputAbsinfo where
+
+  sizeOf _ = fromIntegral [C.pure| int { sizeof(struct input_absinfo) } |]
+
+  alignment _ =
+    fromIntegral [C.pure| int { __alignof__(struct input_absinfo) } |]
+
+  peek (castPtr -> source) = do
+    (value, minimum, maximum, fuzz, flat, resolution) <-
+      C.withPtrs_ $ \(value, minimum, maximum, fuzz, flat, resolution) ->
+        [C.block| void {
+          struct input_absinfo *target =
+            (struct input_absinfo *) $(void *source);
+          *$(int32_t *value) = target->value;
+          *$(int32_t *minimum) = target->minimum;
+          *$(int32_t *maximum) = target->maximum;
+          *$(int32_t *fuzz) = target->fuzz;
+          *$(int32_t *flat) = target->flat;
+          *$(int32_t *resolution) = target->resolution;
+        } |]
+    pure (InputAbsinfo value minimum maximum fuzz flat resolution)
+
+  poke
+    (castPtr -> target)
+    (InputAbsinfo value minimum maximum fuzz flat resolution) =
+      [C.block| void {
+        struct input_absinfo *target = (struct input_absinfo *) $(void *target);
+        target->value = $(int32_t value);
+        target->minimum = $(int32_t minimum);
+        target->maximum = $(int32_t maximum);
+        target->fuzz = $(int32_t fuzz);
+        target->flat = $(int32_t flat);
+        target->resolution = $(int32_t resolution);
+      } |]
 
 evdevCtx :: Context
 evdevCtx =
