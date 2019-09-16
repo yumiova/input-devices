@@ -1,6 +1,6 @@
 name:          input-devices
 version:       0.1.0.0
-cabal-version: >=1.10
+cabal-version: 2.0
 build-type:    Simple
 license:       MIT
 license-file:  LICENSE.txt
@@ -16,9 +16,31 @@ source-repository head
   type:     git
   location: https://github.com/yumiova/input-devices
 
+library libevdev
+  default-language:  Haskell2010
+  exposed-modules:   System.Evdev
+  build-depends:
+      base        ^>=4.12.0.0
+    , containers  ^>=0.6.0.1
+    , inline-c    ^>=0.7.0.1
+
+  other-modules:     System.Evdev.Time
+  hs-source-dirs:    libevdev
+  other-extensions:
+    OverloadedStrings
+    QuasiQuotes
+    TemplateHaskell
+    ViewPatterns
+
+  ghc-options:
+    -Wall -Wcompat -Wincomplete-uni-patterns
+    -Wincomplete-record-updates -Wredundant-constraints
+
+  pkgconfig-depends: libevdev (==1.6.0 || >1.6.0) && <1.7
+
 library
   default-language: Haskell2010
-  build-depends:    base >=4.12.0.0 && <4.13
+  build-depends:    base ^>=4.12.0.0
   hs-source-dirs:   library
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns
