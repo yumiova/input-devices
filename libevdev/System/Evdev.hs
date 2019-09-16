@@ -103,6 +103,7 @@ data InputAbsinfo
         inputAbsinfoFlat :: Int32,
         inputAbsinfoResolution :: Int32
         }
+  deriving (Eq, Ord, Show, Read)
 
 evdevCtx :: Context
 evdevCtx =
