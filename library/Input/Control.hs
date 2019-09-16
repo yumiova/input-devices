@@ -8,7 +8,8 @@ module Input.Control
     control,
     Key (Key, unKey),
     key,
-    Axis (Axis, unAxis)
+    Axis (Axis, unAxis),
+    axis
     )
 where
 
@@ -59,3 +60,8 @@ key code = control (Key 0) (pure type') (pure code) (pure Key)
     type' = [C.pure| uint16_t { EV_KEY } |]
 
 newtype Axis = Axis {unAxis :: Int32}
+
+axis :: Word16 -> Control Axis
+axis code = control (Axis 0) (pure type') (pure code) (pure Axis)
+  where
+    type' = [C.pure| uint16_t { EV_ABS } |]
