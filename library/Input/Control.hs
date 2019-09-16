@@ -1,5 +1,6 @@
 module Input.Control
   ( Control ((:<)),
+    event,
     stateful
     )
 where
@@ -19,6 +20,9 @@ instance Applicative Control where
   pure a = a :< const (pure a)
 
   ~(f :< fs) <*> ~(a :< as) = f a :< liftA2 (<*>) fs as
+
+event :: Control (Maybe InputEvent)
+event = Nothing :< pure . Just
 
 stateful :: a -> Control (a -> a) -> Control a
 stateful current ~(f :< fs) = increment :< stateful increment . fs
