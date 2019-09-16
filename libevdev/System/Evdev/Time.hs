@@ -45,5 +45,4 @@ instance Storable Timeval where
     } |]
 
 timevalCtx :: Context
-timevalCtx =
-  mempty {ctxTypesTable = Map.singleton (Struct "timeval") [t|Timeval|]}
+timevalCtx = mempty {ctxTypesTable = Map.singleton (Struct "timeval") [t|Timeval|]}

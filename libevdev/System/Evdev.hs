@@ -5,13 +5,7 @@
 
 module System.Evdev
   ( Timeval (Timeval, timevalSec, timevalUsec),
-    InputEvent
-      ( InputEvent,
-        inputEventTime,
-        inputEventType,
-        inputEventCode,
-        inputEventValue
-        ),
+    InputEvent (InputEvent, inputEventTime, inputEventType, inputEventCode, inputEventValue),
     InputAbsinfo
       ( InputAbsinfo,
         inputAbsinfoValue,
@@ -30,14 +24,7 @@ import qualified Data.Map as Map (fromList)
 import Data.Word (Word16)
 import Foreign (Ptr, Storable (alignment, peek, poke, sizeOf), alloca, castPtr)
 import Foreign.C (CInt (CInt))
-import qualified Language.C.Inline as C
-  ( baseCtx,
-    block,
-    context,
-    include,
-    pure,
-    withPtrs_
-    )
+import qualified Language.C.Inline as C (baseCtx, block, context, include, pure, withPtrs_)
 import Language.C.Inline.Context (Context (ctxTypesTable))
 import Language.C.Types (TypeSpecifier (Struct))
 import System.Evdev.Time
@@ -110,15 +97,13 @@ instance Storable InputAbsinfo where
 
   sizeOf _ = fromIntegral [C.pure| int { sizeof(struct input_absinfo) } |]
 
-  alignment _ =
-    fromIntegral [C.pure| int { __alignof__(struct input_absinfo) } |]
+  alignment _ = fromIntegral [C.pure| int { __alignof__(struct input_absinfo) } |]
 
   peek (castPtr -> source) = do
     (value, minimum, maximum, fuzz, flat, resolution) <-
       C.withPtrs_ $ \(value, minimum, maximum, fuzz, flat, resolution) ->
         [C.block| void {
-          struct input_absinfo *target =
-            (struct input_absinfo *) $(void *source);
+          struct input_absinfo *target = (struct input_absinfo *) $(void *source);
           *$(int32_t *value) = target->value;
           *$(int32_t *minimum) = target->minimum;
           *$(int32_t *maximum) = target->maximum;
@@ -128,18 +113,16 @@ instance Storable InputAbsinfo where
         } |]
     pure (InputAbsinfo value minimum maximum fuzz flat resolution)
 
-  poke
-    (castPtr -> target)
-    (InputAbsinfo value minimum maximum fuzz flat resolution) =
-      [C.block| void {
-        struct input_absinfo *target = (struct input_absinfo *) $(void *target);
-        target->value = $(int32_t value);
-        target->minimum = $(int32_t minimum);
-        target->maximum = $(int32_t maximum);
-        target->fuzz = $(int32_t fuzz);
-        target->flat = $(int32_t flat);
-        target->resolution = $(int32_t resolution);
-      } |]
+  poke (castPtr -> target) (InputAbsinfo value minimum maximum fuzz flat resolution) =
+    [C.block| void {
+      struct input_absinfo *target = (struct input_absinfo *) $(void *target);
+      target->value = $(int32_t value);
+      target->minimum = $(int32_t minimum);
+      target->maximum = $(int32_t maximum);
+      target->fuzz = $(int32_t fuzz);
+      target->flat = $(int32_t flat);
+      target->resolution = $(int32_t resolution);
+    } |]
 
 evdevCtx :: Context
 evdevCtx =
