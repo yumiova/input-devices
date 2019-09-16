@@ -26,7 +26,7 @@ module System.Evdev
 where
 
 import Data.Int (Int32)
-import qualified Data.Map as Map (singleton)
+import qualified Data.Map as Map (fromList)
 import Data.Word (Word16)
 import Foreign (Ptr, Storable (alignment, peek, poke, sizeOf), alloca, castPtr)
 import Foreign.C (CInt (CInt))
@@ -109,5 +109,9 @@ evdevCtx :: Context
 evdevCtx =
   timevalCtx
     <> mempty
-      { ctxTypesTable = Map.singleton (Struct "input_event") [t|InputEvent|]
+      { ctxTypesTable =
+          Map.fromList
+            [ (Struct "input_event", [t|InputEvent|]),
+              (Struct "input_absinfo", [t|InputAbsinfo|])
+              ]
         }
