@@ -1,12 +1,15 @@
 module Input.Control
   ( Control ((:<)),
     event,
-    stateful
+    stateful,
+    control
     )
 where
 
 import Control.Applicative (liftA2)
-import System.Libevdev (InputEvent)
+import Data.Int (Int32)
+import Data.Word (Word16)
+import System.Libevdev (InputEvent (inputEventCode, inputEventType, inputEventValue))
 
 infixr 5 :<
 
@@ -28,3 +31,11 @@ stateful :: a -> Control (a -> a) -> Control a
 stateful current ~(f :< fs) = increment :< stateful increment . fs
   where
     increment = f current
+
+control :: a -> Control Word16 -> Control Word16 -> Control (Int32 -> a) -> Control a
+control initial types codes fs =
+  stateful initial (maybe (\_ _ _ -> id) k <$> event <*> types <*> codes <*> fs)
+  where
+    k delta type' code f current
+      | inputEventType delta == type' && inputEventCode delta == code = f (inputEventValue delta)
+      | otherwise = current
