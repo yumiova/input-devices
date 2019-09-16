@@ -12,6 +12,15 @@ module System.Evdev
         inputEventCode,
         inputEventValue
         ),
+    InputAbsinfo
+      ( InputAbsinfo,
+        inputAbsinfoValue,
+        inputAbsinfoMinimum,
+        inputAbsinfoMaximum,
+        inputAbsinfoFuzz,
+        inputAbsinfoFlat,
+        inputAbsinfoResolution
+        ),
     evdevCtx
     )
 where
@@ -42,6 +51,12 @@ C.include "<stdint.h>"
 
 C.include "<linux/input.h>"
 
+marshal :: Storable a => a -> (Ptr a -> IO b) -> IO b
+marshal a f =
+  alloca $ \ptr -> do
+    poke ptr a
+    f ptr
+
 data InputEvent
   = InputEvent
       { inputEventTime :: Timeval,
@@ -50,12 +65,6 @@ data InputEvent
         inputEventValue :: Int32
         }
   deriving (Eq, Ord, Show, Read)
-
-marshal :: Storable a => a -> (Ptr a -> IO b) -> IO b
-marshal a f =
-  alloca $ \ptr -> do
-    poke ptr a
-    f ptr
 
 instance Storable InputEvent where
 
@@ -84,6 +93,16 @@ instance Storable InputEvent where
         target->code = $(uint16_t code);
         target->value = $(int32_t value);
       } |]
+
+data InputAbsinfo
+  = InputAbsinfo
+      { inputAbsinfoValue :: Int32,
+        inputAbsinfoMinimum :: Int32,
+        inputAbsinfoMaximum :: Int32,
+        inputAbsinfoFuzz :: Int32,
+        inputAbsinfoFlat :: Int32,
+        inputAbsinfoResolution :: Int32
+        }
 
 evdevCtx :: Context
 evdevCtx =
