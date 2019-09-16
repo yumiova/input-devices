@@ -15,11 +15,12 @@ module System.Evdev
         inputAbsinfoValue
         ),
     Libevdev,
+    LibevdevUinput,
     libevdevCtx
     )
 where
 
-import qualified Data.Map as Map (singleton)
+import qualified Data.Map as Map (fromList)
 import Language.C.Inline.Context (Context (ctxTypesTable))
 import Language.C.Types (TypeSpecifier (Struct))
 import System.Evdev.Input
@@ -41,7 +42,15 @@ import System.Evdev.Time
 
 data Libevdev
 
+data LibevdevUinput
+
 libevdevCtx :: Context
 libevdevCtx =
   inputCtx
-    <> mempty {ctxTypesTable = Map.singleton (Struct "libevdev") [t|Libevdev|]}
+    <> mempty
+      { ctxTypesTable =
+          Map.fromList
+            [ (Struct "libevdev", [t|Libevdev|]),
+              (Struct "libevdev_uinput", [t|LibevdevUinput|])
+              ]
+        }
