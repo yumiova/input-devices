@@ -7,7 +7,8 @@ module Input.Control
     stateful,
     control,
     Key (Key, unKey),
-    key
+    key,
+    Axis (Axis, unAxis)
     )
 where
 
@@ -56,3 +57,5 @@ key :: Word16 -> Control Key
 key code = control (Key 0) (pure type') (pure code) (pure Key)
   where
     type' = [C.pure| uint16_t { EV_KEY } |]
+
+newtype Axis = Axis {unAxis :: Int32}
