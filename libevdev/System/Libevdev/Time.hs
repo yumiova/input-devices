@@ -3,7 +3,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ViewPatterns #-}
 
-module System.Evdev.Time
+module System.Libevdev.Time
   ( Timeval (Timeval, timevalSec, timevalUsec),
     timevalCtx
     )
