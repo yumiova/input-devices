@@ -1,3 +1,7 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
+
 module System.Evdev
   ( Timeval (Timeval, timevalSec, timevalUsec),
     InputEvent (InputEvent, inputEventCode, inputEventTime, inputEventType, inputEventValue),
@@ -15,7 +19,9 @@ module System.Evdev
     )
 where
 
-import Language.C.Inline.Context (Context)
+import qualified Data.Map as Map (singleton)
+import Language.C.Inline.Context (Context (ctxTypesTable))
+import Language.C.Types (TypeSpecifier (Struct))
 import System.Evdev.Input
   ( InputAbsinfo
       ( InputAbsinfo,
@@ -36,4 +42,6 @@ import System.Evdev.Time
 data Libevdev
 
 libevdevCtx :: Context
-libevdevCtx = inputCtx
+libevdevCtx =
+  inputCtx
+    <> mempty {ctxTypesTable = Map.singleton (Struct "libevdev") [t|Libevdev|]}
