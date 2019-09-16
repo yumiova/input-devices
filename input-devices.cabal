@@ -50,7 +50,10 @@ library
     , libevdev
 
   hs-source-dirs:    library
-  other-extensions:  QuasiQuotes
+  other-extensions:
+    QuasiQuotes
+    TemplateHaskell
+
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns
     -Wincomplete-record-updates -Wredundant-constraints
