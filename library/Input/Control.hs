@@ -1,5 +1,6 @@
 module Input.Control
-  ( Control ((:<))
+  ( Control ((:<)),
+    stateful
     )
 where
 
@@ -18,3 +19,8 @@ instance Applicative Control where
   pure a = a :< const (pure a)
 
   ~(f :< fs) <*> ~(a :< as) = f a :< liftA2 (<*>) fs as
+
+stateful :: a -> Control (a -> a) -> Control a
+stateful current ~(f :< fs) = increment :< stateful increment . fs
+  where
+    increment = f current
