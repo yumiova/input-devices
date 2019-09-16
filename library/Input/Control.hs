@@ -9,7 +9,8 @@ module Input.Control
     Key (Key, unKey),
     key,
     Axis (Axis, unAxis),
-    axis
+    axis,
+    Joystick (Joystick, joystickX, joystickY)
     )
 where
 
@@ -65,3 +66,5 @@ axis :: Word16 -> Control Axis
 axis code = control (Axis 0) (pure type') (pure code) (pure Axis)
   where
     type' = [C.pure| uint16_t { EV_ABS } |]
+
+data Joystick = Joystick {joystickX :: Axis, joystickY :: Axis}
