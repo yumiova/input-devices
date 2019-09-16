@@ -44,7 +44,10 @@ library libevdev
 library
   default-language: Haskell2010
   exposed-modules:  Input.Control
-  build-depends:    base ^>=4.12.0.0
+  build-depends:
+      base      ^>=4.12.0.0
+    , libevdev
+
   hs-source-dirs:   library
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns
