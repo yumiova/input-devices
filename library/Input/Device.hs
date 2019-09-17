@@ -9,13 +9,12 @@ where
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (forConcurrently_)
 import Control.Exception (bracket)
-import Control.Monad (forever)
-import Foreign (alloca, peek)
+import Foreign (Ptr, alloca, peek)
 import Foreign.C (CInt (CInt))
 import Input.Control (Control)
 import qualified Language.C.Inline as C (baseCtx, context, exp, include)
 import System.Directory (listDirectory)
-import System.Libevdev (libevdevCtx)
+import System.Libevdev (Libevdev, libevdevCtx)
 import System.Posix.IO
   ( OpenFileFlags (nonBlock),
     OpenMode (ReadOnly),
@@ -29,21 +28,26 @@ C.context (C.baseCtx <> libevdevCtx)
 
 C.include "<libevdev/libevdev.h>"
 
+observeDevice :: Ptr Libevdev -> Control a -> IO ()
+observeDevice libevdev control =
+  alloca $ \eventPtr -> do
+    [C.exp| void {
+      libevdev_next_event(
+        $(struct libevdev *libevdev),
+        LIBEVDEV_READ_FLAG_NORMAL,
+        $(struct input_event *eventPtr)
+      )
+    } |]
+    event <- peek eventPtr
+    print (libevdev, event)
+    threadDelay 8192
+    observeDevice libevdev control
+
 observePath :: FilePath -> Control a -> IO ()
-observePath filePath _ =
+observePath filePath control =
   withFd $ \(Fd fd) -> withLibevdev $ \libevdev -> do
     [C.exp| void { libevdev_set_fd($(struct libevdev *libevdev), $(int fd)) } |]
-    alloca $ \eventPtr -> forever $ do
-      threadDelay 8192
-      [C.exp| void {
-        libevdev_next_event(
-          $(struct libevdev *libevdev),
-          LIBEVDEV_READ_FLAG_NORMAL,
-          $(struct input_event *eventPtr)
-        )
-      } |]
-      event <- peek eventPtr
-      print (filePath, fd, libevdev, event)
+    observeDevice libevdev control
   where
     flags = defaultFileFlags {nonBlock = True}
     withFd = bracket (openFd filePath ReadOnly Nothing flags) closeFd
