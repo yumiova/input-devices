@@ -4,12 +4,18 @@ import Control.Concurrent.Async (forConcurrently_)
 import Control.Exception (bracket)
 import Input.Control (Control)
 import System.Directory (listDirectory)
-import System.Posix.IO (OpenMode (ReadOnly), closeFd, defaultFileFlags, openFd)
+import System.Posix.IO
+  ( OpenFileFlags (nonBlock),
+    OpenMode (ReadOnly),
+    closeFd,
+    defaultFileFlags,
+    openFd
+    )
 
 observePath :: FilePath -> Control a -> IO ()
 observePath filePath _ = withFd $ \fd -> print (filePath, fd)
   where
-    flags = defaultFileFlags
+    flags = defaultFileFlags {nonBlock = True}
     withFd = bracket (openFd filePath ReadOnly Nothing flags) closeFd
 
 observe :: Control a -> IO ()
