@@ -28,9 +28,10 @@ C.context (C.baseCtx <> libevdevCtx)
 
 C.include "<libevdev/libevdev.h>"
 
-observeDevice :: Ptr Libevdev -> Control a -> IO ()
-observeDevice libevdev ~(_ :< f) =
+observeDevice :: Show a => Ptr Libevdev -> Control a -> IO ()
+observeDevice libevdev ~(a :< f) =
   alloca $ \eventPtr -> do
+    print a
     [C.exp| void {
       libevdev_next_event(
         $(struct libevdev *libevdev),
@@ -38,12 +39,11 @@ observeDevice libevdev ~(_ :< f) =
         $(struct input_event *eventPtr)
       )
     } |]
-    event <- peek eventPtr
-    print (libevdev, event)
     threadDelay 8192
+    event <- peek eventPtr
     observeDevice libevdev (f event)
 
-observePath :: FilePath -> Control a -> IO ()
+observePath :: Show a => FilePath -> Control a -> IO ()
 observePath filePath control =
   withFd $ \(Fd fd) -> withLibevdev $ \libevdev -> do
     [C.exp| void { libevdev_set_fd($(struct libevdev *libevdev), $(int fd)) } |]
@@ -56,7 +56,7 @@ observePath filePath control =
         [C.exp| struct libevdev * { libevdev_new() } |]
         (\libevdev -> [C.exp| void { libevdev_free($(struct libevdev *libevdev)) } |])
 
-observe :: Control a -> IO ()
+observe :: Show a => Control a -> IO ()
 observe control = do
   inputDevices <- listDirectory prefix
   let eventDevices = filter ((== "event") . take 5) inputDevices
