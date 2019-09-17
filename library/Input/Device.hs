@@ -10,6 +10,7 @@ import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (forConcurrently_)
 import Control.Exception (bracket)
 import Control.Monad (forever)
+import Foreign (alloca, peek)
 import Foreign.C (CInt (CInt))
 import Input.Control (Control)
 import qualified Language.C.Inline as C (baseCtx, context, exp, include)
@@ -32,9 +33,17 @@ observePath :: FilePath -> Control a -> IO ()
 observePath filePath _ =
   withFd $ \(Fd fd) -> withLibevdev $ \libevdev -> do
     [C.exp| void { libevdev_set_fd($(struct libevdev *libevdev), $(int fd)) } |]
-    forever $ do
+    alloca $ \eventPtr -> forever $ do
       threadDelay 8192
-      print (filePath, fd, libevdev)
+      [C.exp| void {
+        libevdev_next_event(
+          $(struct libevdev *libevdev),
+          LIBEVDEV_READ_FLAG_NORMAL,
+          $(struct input_event *eventPtr)
+        )
+      } |]
+      event <- peek eventPtr
+      print (filePath, fd, libevdev, event)
   where
     flags = defaultFileFlags {nonBlock = True}
     withFd = bracket (openFd filePath ReadOnly Nothing flags) closeFd
