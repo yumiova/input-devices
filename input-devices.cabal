@@ -48,7 +48,8 @@ library
     Input.Device
 
   build-depends:
-      base       ^>=4.12.0.0
+      async      ^>=2.2.1
+    , base       ^>=4.12.0.0
     , directory  ^>=1.3.3.0
     , inline-c   ^>=0.7.0.1
     , libevdev
