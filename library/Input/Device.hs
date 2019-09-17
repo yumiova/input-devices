@@ -11,7 +11,7 @@ import Control.Concurrent.Async (forConcurrently_)
 import Control.Exception (bracket)
 import Foreign (Ptr, alloca, peek)
 import Foreign.C (CInt (CInt))
-import Input.Control (Control)
+import Input.Control (Control ((:<)))
 import qualified Language.C.Inline as C (baseCtx, context, exp, include)
 import System.Directory (listDirectory)
 import System.Libevdev (Libevdev, libevdevCtx)
@@ -29,7 +29,7 @@ C.context (C.baseCtx <> libevdevCtx)
 C.include "<libevdev/libevdev.h>"
 
 observeDevice :: Ptr Libevdev -> Control a -> IO ()
-observeDevice libevdev control =
+observeDevice libevdev ~(_ :< f) =
   alloca $ \eventPtr -> do
     [C.exp| void {
       libevdev_next_event(
@@ -41,7 +41,7 @@ observeDevice libevdev control =
     event <- peek eventPtr
     print (libevdev, event)
     threadDelay 8192
-    observeDevice libevdev control
+    observeDevice libevdev (f event)
 
 observePath :: FilePath -> Control a -> IO ()
 observePath filePath control =
