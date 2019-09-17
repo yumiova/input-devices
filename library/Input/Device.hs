@@ -6,8 +6,10 @@ module Input.Device
     )
 where
 
+import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (forConcurrently_)
 import Control.Exception (bracket)
+import Control.Monad (forever)
 import Foreign.C (CInt (CInt))
 import Input.Control (Control)
 import qualified Language.C.Inline as C (baseCtx, context, exp, include)
@@ -30,7 +32,9 @@ observePath :: FilePath -> Control a -> IO ()
 observePath filePath _ =
   withFd $ \(Fd fd) -> withLibevdev $ \libevdev -> do
     [C.exp| void { libevdev_set_fd($(struct libevdev *libevdev), $(int fd)) } |]
-    print (filePath, fd, libevdev)
+    forever $ do
+      threadDelay 8192
+      print (filePath, fd, libevdev)
   where
     flags = defaultFileFlags {nonBlock = True}
     withFd = bracket (openFd filePath ReadOnly Nothing flags) closeFd
