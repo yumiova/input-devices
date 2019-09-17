@@ -9,7 +9,7 @@ where
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (forConcurrently_)
 import Control.Exception (bracket)
-import Data.Foldable (foldl')
+import Data.Foldable (foldlM)
 import Foreign (Ptr, alloca, peek)
 import Foreign.C (CInt (CInt))
 import Input.Control (Control ((:<)))
@@ -56,10 +56,14 @@ popEvents libevdev = alloca go
         } |]
       dispatch status target
 
-observeStep :: Ptr Libevdev -> Control a -> IO (Control a)
+observeStep :: Show a => Ptr Libevdev -> Control a -> IO (Control a)
 observeStep libevdev control = do
   events <- popEvents libevdev
-  pure (foldl' (\(_ :< f) event -> f event) control events)
+  foldlM apply control events
+  where
+    apply (a :< f) event = do
+      print a
+      pure (f event)
 
 observeDevice :: Show a => Ptr Libevdev -> Control a -> IO ()
 observeDevice libevdev control = do
