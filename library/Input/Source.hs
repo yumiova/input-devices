@@ -2,10 +2,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Input.Source
-  ( Source ((:<)),
+  ( -- * Internal streams
+    Stream ((:<)),
+    -- * Control sources
+    Source (Source, runSource),
     event,
     stateful,
     control,
+    -- * Controls
     Key (Key, unKey),
     key,
     Axis (Axis, unAxis),
@@ -28,24 +32,39 @@ C.include "<linux/input.h>"
 
 infixr 5 :<
 
-data Source a = a :< (InputEvent -> Source a)
+-- * Internal streams
+data Stream a = a :< (InputEvent -> Stream a)
 
-instance Functor Source where
+instance Functor Stream where
   fmap f ~(a :< as) = f a :< (fmap f <$> as)
 
-instance Applicative Source where
+instance Applicative Stream where
 
   pure a = a :< const (pure a)
 
   ~(f :< fs) <*> ~(a :< as) = f a :< liftA2 (<*>) fs as
 
+-- * Control sources
+newtype Source a = Source {runSource :: Stream a}
+
+instance Functor Source where
+  fmap f = Source . fmap f . runSource
+
+instance Applicative Source where
+
+  pure = Source . pure
+
+  (<*>) source = Source . (<*>) (runSource source) . runSource
+
 event :: Source (Maybe InputEvent)
-event = Nothing :< \current -> Just . fromMaybe current <$> event
+event = Source go
+  where
+    go = Nothing :< \current -> Just . fromMaybe current <$> go
 
 stateful :: a -> Source (a -> a) -> Source a
-stateful current ~(f :< fs) = increment :< stateful increment . fs
+stateful initial = Source . go initial . runSource
   where
-    increment = f current
+    go current ~(f :< fs) = f current :< go (f current) . fs
 
 control :: a -> Source Word16 -> Source Word16 -> Source (Int32 -> a) -> Source a
 control initial types codes fs =
@@ -55,6 +74,7 @@ control initial types codes fs =
       | inputEventType delta == type' && inputEventCode delta == code = f (inputEventValue delta)
       | otherwise = current
 
+-- * Controls
 newtype Key = Key {unKey :: Int32}
 
 key :: Word16 -> Source Key

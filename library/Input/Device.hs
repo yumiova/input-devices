@@ -12,7 +12,8 @@ import Control.Exception (bracket)
 import Data.Foldable (foldlM)
 import Foreign (Ptr, alloca, peek)
 import Foreign.C (CInt (CInt))
-import Input.Source (Source ((:<)))
+import Input.Source (Source (runSource))
+import qualified Input.Source as Source (Stream ((:<)))
 import qualified Language.C.Inline as C (baseCtx, context, exp, include, pure)
 import System.Directory (listDirectory)
 import System.Libevdev (InputEvent, Libevdev, libevdevCtx)
@@ -56,14 +57,14 @@ popEvents libevdev = alloca go
         } |]
       dispatch status target
 
-observeDevice :: Show a => Ptr Libevdev -> Source a -> IO ()
+observeDevice :: Show a => Ptr Libevdev -> Source.Stream a -> IO ()
 observeDevice libevdev initial = do
   events <- popEvents libevdev
   increment <- foldlM apply initial events
   threadDelay 8192
   observeDevice libevdev increment
   where
-    apply (a :< f) event = do
+    apply (a Source.:< f) event = do
       print a
       pure (f event)
 
@@ -71,7 +72,8 @@ observePath :: Show a => FilePath -> Source a -> IO ()
 observePath filePath control =
   withFd $ \(Fd fd) -> withLibevdev $ \libevdev -> do
     [C.exp| void { libevdev_set_fd($(struct libevdev *libevdev), $(int fd)) } |]
-    observeDevice libevdev control
+    let initial = runSource control
+    observeDevice libevdev initial
   where
     flags = defaultFileFlags {nonBlock = True}
     withFd = bracket (openFd filePath ReadOnly Nothing flags) closeFd
