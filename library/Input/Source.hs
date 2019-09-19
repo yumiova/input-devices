@@ -89,6 +89,7 @@ subscribe kind code f initial = Source $ \libevdev -> do
 
 -- * Controls
 newtype Key = Key {unKey :: Int32}
+  deriving (Eq, Ord, Show, Read)
 
 key :: Word16 -> Source Key
 key code = subscribe kind code Key (Key 0)
