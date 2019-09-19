@@ -82,7 +82,9 @@ observePath filePath control =
     withLibevdev =
       bracket
         [C.exp| struct libevdev * { libevdev_new() } |]
-        (\libevdev -> [C.exp| void { libevdev_free($(struct libevdev *libevdev)) } |])
+        ( \libevdev ->
+            [C.exp| void { libevdev_free($(struct libevdev *libevdev)) } |]
+          )
 
 observe :: Show a => Source a -> IO ()
 observe control = do

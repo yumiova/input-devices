@@ -61,7 +61,8 @@ instance Applicative Source where
 
   pure = Source . const . pure . Just . pure
 
-  (<*>) source = Source . liftA2 (liftA2 (liftA2 (<*>))) (runSource source) . runSource
+  (<*>) source =
+    Source . liftA2 (liftA2 (liftA2 (<*>))) (runSource source) . runSource
 
 subscribe :: Word16 -> Word16 -> (Int32 -> a) -> a -> Source a
 subscribe kind code f initial = Source $ \libevdev -> do
@@ -79,9 +80,10 @@ subscribe kind code f initial = Source $ \libevdev -> do
   where
     loop current event
       | inputEventType event == kind && inputEventCode event == code =
-        let { increment = f (inputEventValue event) }
-         in increment :< loop increment
+        increment :< loop increment
       | otherwise = current :< loop current
+      where
+        { increment = f (inputEventValue event) }
 
 -- * Controls
 newtype Key = Key {unKey :: Int32}
