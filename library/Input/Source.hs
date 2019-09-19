@@ -97,6 +97,7 @@ key code = subscribe kind code Key (Key 0)
     kind = [C.pure| uint16_t { EV_KEY } |]
 
 newtype Axis = Axis {unAxis :: Int32}
+  deriving (Eq, Ord, Show, Read)
 
 axis :: Word16 -> Source Axis
 axis code = subscribe kind code Axis (Axis 0)
