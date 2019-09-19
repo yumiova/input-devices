@@ -9,7 +9,6 @@ where
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (forConcurrently_)
 import Control.Exception (bracket)
-import Data.Foldable (foldlM)
 import Foreign (Ptr, alloca, peek)
 import Foreign.C (CInt (CInt))
 import Input.Source (Source (runSource))
@@ -58,15 +57,12 @@ popEvents libevdev = alloca go
       dispatch status target
 
 observeDevice :: Show a => Ptr Libevdev -> Source.Stream a -> IO ()
-observeDevice libevdev initial = do
-  events <- popEvents libevdev
-  increment <- foldlM apply initial events
+observeDevice libevdev (a Source.:< f) = do
+  delta <- popEvents libevdev
+  if not (null delta) then print a else pure ()
+  let increment = f delta
   threadDelay 8192
   observeDevice libevdev increment
-  where
-    apply (a Source.:< f) event = do
-      print a
-      pure (f event)
 
 observePath :: Show a => FilePath -> Source a -> IO ()
 observePath filePath control =

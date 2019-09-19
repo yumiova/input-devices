@@ -18,6 +18,7 @@ module Input.Source
 where
 
 import Control.Applicative (liftA2)
+import Data.Foldable (foldl')
 import Data.Int (Int32)
 import Data.Word (Word16)
 import Foreign (Ptr)
@@ -40,7 +41,7 @@ C.include "<libevdev/libevdev.h>"
 -- * Internal streams
 infixr 5 :<
 
-data Stream a = a :< (InputEvent -> Stream a)
+data Stream a = a :< ([InputEvent] -> Stream a)
 
 instance Functor Stream where
   fmap f ~(a :< as) = f a :< (fmap f <$> as)
@@ -78,12 +79,13 @@ subscribe kind code f initial = Source $ \libevdev -> do
     then pure (Just (initial :< loop initial))
     else pure Nothing
   where
-    loop current event
+    apply current event
       | inputEventType event == kind && inputEventCode event == code =
-        increment :< loop increment
-      | otherwise = current :< loop current
+        f (inputEventValue event)
+      | otherwise = current
+    loop current delta = increment :< loop increment
       where
-        { increment = f (inputEventValue event) }
+        { increment = foldl' apply current delta }
 
 -- * Controls
 newtype Key = Key {unKey :: Int32}
