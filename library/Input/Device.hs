@@ -72,8 +72,9 @@ observePath :: Show a => FilePath -> Source a -> IO ()
 observePath filePath control =
   withFd $ \(Fd fd) -> withLibevdev $ \libevdev -> do
     [C.exp| void { libevdev_set_fd($(struct libevdev *libevdev), $(int fd)) } |]
-    let initial = runSource control
-    observeDevice libevdev initial
+    case runSource control of
+      Nothing -> pure ()
+      Just initial -> observeDevice libevdev initial
   where
     flags = defaultFileFlags {nonBlock = True}
     withFd = bracket (openFd filePath ReadOnly Nothing flags) closeFd

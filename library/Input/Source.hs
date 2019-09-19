@@ -42,19 +42,19 @@ instance Applicative Stream where
   ~(f :< fs) <*> ~(a :< as) = f a :< liftA2 (<*>) fs as
 
 -- * Control sources
-newtype Source a = Source {runSource :: Stream a}
+newtype Source a = Source {runSource :: Maybe (Stream a)}
 
 instance Functor Source where
-  fmap f = Source . fmap f . runSource
+  fmap f = Source . fmap (fmap f) . runSource
 
 instance Applicative Source where
 
-  pure = Source . pure
+  pure = Source . Just . pure
 
-  (<*>) source = Source . (<*>) (runSource source) . runSource
+  (<*>) source = Source . liftA2 (<*>) (runSource source) . runSource
 
 subscribe :: Word16 -> Word16 -> (Int32 -> a) -> a -> Source a
-subscribe kind code f initial = Source (initial :< loop initial)
+subscribe kind code f initial = Source (Just (initial :< loop initial))
   where
     loop current event
       | inputEventType event == kind && inputEventCode event == code =
