@@ -56,20 +56,16 @@ popEvents libevdev = alloca go
         } |]
       dispatch status target
 
-observeStep :: Show a => Ptr Libevdev -> Control a -> IO (Control a)
-observeStep libevdev control = do
+observeDevice :: Show a => Ptr Libevdev -> Control a -> IO ()
+observeDevice libevdev initial = do
   events <- popEvents libevdev
-  foldlM apply control events
+  increment <- foldlM apply initial events
+  threadDelay 8192
+  observeDevice libevdev increment
   where
     apply (a :< f) event = do
       print a
       pure (f event)
-
-observeDevice :: Show a => Ptr Libevdev -> Control a -> IO ()
-observeDevice libevdev control = do
-  increment <- observeStep libevdev control
-  threadDelay 8192
-  observeDevice libevdev increment
 
 observePath :: Show a => FilePath -> Control a -> IO ()
 observePath filePath control =
