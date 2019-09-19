@@ -72,7 +72,8 @@ observePath :: Show a => FilePath -> Source a -> IO ()
 observePath filePath control =
   withFd $ \(Fd fd) -> withLibevdev $ \libevdev -> do
     [C.exp| void { libevdev_set_fd($(struct libevdev *libevdev), $(int fd)) } |]
-    case runSource control of
+    minitial <- runSource control libevdev
+    case minitial of
       Nothing -> pure ()
       Just initial -> observeDevice libevdev initial
   where

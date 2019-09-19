@@ -20,8 +20,9 @@ where
 import Control.Applicative (liftA2)
 import Data.Int (Int32)
 import Data.Word (Word16)
+import Foreign (Ptr)
 import qualified Language.C.Inline as C (include, pure)
-import System.Libevdev (InputEvent (inputEventCode, inputEventType, inputEventValue))
+import System.Libevdev (InputEvent (inputEventCode, inputEventType, inputEventValue), Libevdev)
 
 C.include "<stdint.h>"
 
@@ -42,19 +43,19 @@ instance Applicative Stream where
   ~(f :< fs) <*> ~(a :< as) = f a :< liftA2 (<*>) fs as
 
 -- * Control sources
-newtype Source a = Source {runSource :: Maybe (Stream a)}
+newtype Source a = Source {runSource :: Ptr Libevdev -> IO (Maybe (Stream a))}
 
 instance Functor Source where
-  fmap f = Source . fmap (fmap f) . runSource
+  fmap f = Source . fmap (fmap (fmap (fmap f))) . runSource
 
 instance Applicative Source where
 
-  pure = Source . Just . pure
+  pure = Source . const . pure . Just . pure
 
-  (<*>) source = Source . liftA2 (<*>) (runSource source) . runSource
+  (<*>) source = Source . liftA2 (liftA2 (liftA2 (<*>))) (runSource source) . runSource
 
 subscribe :: Word16 -> Word16 -> (Int32 -> a) -> a -> Source a
-subscribe kind code f initial = Source (Just (initial :< loop initial))
+subscribe kind code f initial = Source (const (pure (Just (initial :< loop initial))))
   where
     loop current event
       | inputEventType event == kind && inputEventCode event == code =
