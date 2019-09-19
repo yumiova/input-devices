@@ -43,11 +43,17 @@ library libevdev
 
 library
   default-language:  Haskell2010
-  exposed-modules:   Input.Control
+  exposed-modules:
+    Input.Control
+    Input.Device
+
   build-depends:
-      base      ^>=4.12.0.0
-    , inline-c  ^>=0.7.0.1
+      async      ^>=2.2.1
+    , base       ^>=4.12.0.0
+    , directory  ^>=1.3.3.0
+    , inline-c   ^>=0.7.0.1
     , libevdev
+    , unix       ^>=2.7.2.2
 
   hs-source-dirs:    library
   other-extensions:

@@ -17,6 +17,7 @@ where
 
 import Control.Applicative (liftA2)
 import Data.Int (Int32)
+import Data.Maybe (fromMaybe)
 import Data.Word (Word16)
 import qualified Language.C.Inline as C (include, pure)
 import System.Libevdev (InputEvent (inputEventCode, inputEventType, inputEventValue))
@@ -39,7 +40,7 @@ instance Applicative Control where
   ~(f :< fs) <*> ~(a :< as) = f a :< liftA2 (<*>) fs as
 
 event :: Control (Maybe InputEvent)
-event = Nothing :< pure . Just
+event = Nothing :< \current -> Just . fromMaybe current <$> event
 
 stateful :: a -> Control (a -> a) -> Control a
 stateful current ~(f :< fs) = increment :< stateful increment . fs
