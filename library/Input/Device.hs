@@ -44,7 +44,7 @@ popEvents libevdev = alloca go
         do
           putStrLn "unimplemented: input device syncing"
           pure []
-      | otherwise = error ("unimplemented: status" <> show status)
+      | otherwise = error ("unimplemented: status " <> show status)
     go target = do
       status <-
         [C.exp| int {
