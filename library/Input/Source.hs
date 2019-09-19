@@ -105,6 +105,7 @@ axis code = subscribe kind code Axis (Axis 0)
     kind = [C.pure| uint16_t { EV_ABS } |]
 
 data Joystick = Joystick {joystickX :: Axis, joystickY :: Axis}
+  deriving (Eq, Ord, Show, Read)
 
 joystick :: Word16 -> Word16 -> Source Joystick
 joystick xCode yCode = Joystick <$> axis xCode <*> axis yCode
