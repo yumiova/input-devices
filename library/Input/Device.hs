@@ -12,7 +12,7 @@ import Control.Exception (bracket)
 import Data.Foldable (foldlM)
 import Foreign (Ptr, alloca, peek)
 import Foreign.C (CInt (CInt))
-import Input.Control (Control ((:<)))
+import Input.Source (Source ((:<)))
 import qualified Language.C.Inline as C (baseCtx, context, exp, include, pure)
 import System.Directory (listDirectory)
 import System.Libevdev (InputEvent, Libevdev, libevdevCtx)
@@ -56,7 +56,7 @@ popEvents libevdev = alloca go
         } |]
       dispatch status target
 
-observeDevice :: Show a => Ptr Libevdev -> Control a -> IO ()
+observeDevice :: Show a => Ptr Libevdev -> Source a -> IO ()
 observeDevice libevdev initial = do
   events <- popEvents libevdev
   increment <- foldlM apply initial events
@@ -67,7 +67,7 @@ observeDevice libevdev initial = do
       print a
       pure (f event)
 
-observePath :: Show a => FilePath -> Control a -> IO ()
+observePath :: Show a => FilePath -> Source a -> IO ()
 observePath filePath control =
   withFd $ \(Fd fd) -> withLibevdev $ \libevdev -> do
     [C.exp| void { libevdev_set_fd($(struct libevdev *libevdev), $(int fd)) } |]
@@ -80,7 +80,7 @@ observePath filePath control =
         [C.exp| struct libevdev * { libevdev_new() } |]
         (\libevdev -> [C.exp| void { libevdev_free($(struct libevdev *libevdev)) } |])
 
-observe :: Show a => Control a -> IO ()
+observe :: Show a => Source a -> IO ()
 observe control = do
   inputDevices <- listDirectory prefix
   let eventDevices = filter ((== "event") . take 5) inputDevices
