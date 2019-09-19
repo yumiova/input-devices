@@ -21,12 +21,21 @@ import Control.Applicative (liftA2)
 import Data.Int (Int32)
 import Data.Word (Word16)
 import Foreign (Ptr)
-import qualified Language.C.Inline as C (include, pure)
-import System.Libevdev (InputEvent (inputEventCode, inputEventType, inputEventValue), Libevdev)
+import Foreign.C (CInt (CInt))
+import qualified Language.C.Inline as C (baseCtx, context, exp, include, pure)
+import System.Libevdev
+  ( InputEvent (inputEventCode, inputEventType, inputEventValue),
+    Libevdev,
+    libevdevCtx
+    )
+
+C.context (C.baseCtx <> libevdevCtx)
 
 C.include "<stdint.h>"
 
 C.include "<linux/input.h>"
+
+C.include "<libevdev/libevdev.h>"
 
 -- * Internal streams
 infixr 5 :<
@@ -55,7 +64,18 @@ instance Applicative Source where
   (<*>) source = Source . liftA2 (liftA2 (liftA2 (<*>))) (runSource source) . runSource
 
 subscribe :: Word16 -> Word16 -> (Int32 -> a) -> a -> Source a
-subscribe kind code f initial = Source (const (pure (Just (initial :< loop initial))))
+subscribe kind code f initial = Source $ \libevdev -> do
+  valid <-
+    [C.exp| int {
+      libevdev_has_event_code(
+        $(struct libevdev *libevdev),
+        $(uint16_t kind),
+        $(uint16_t code)
+      )
+    } |]
+  if valid == 1
+    then pure (Just (initial :< loop initial))
+    else pure Nothing
   where
     loop current event
       | inputEventType event == kind && inputEventCode event == code =
