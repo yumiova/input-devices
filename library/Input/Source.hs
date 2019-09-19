@@ -6,9 +6,7 @@ module Input.Source
     Stream ((:<)),
     -- * Control sources
     Source (Source, runSource),
-    event,
-    stateful,
-    control,
+    subscribe,
     -- * Controls
     Key (Key, unKey),
     key,
@@ -21,7 +19,6 @@ where
 
 import Control.Applicative (liftA2)
 import Data.Int (Int32)
-import Data.Maybe (fromMaybe)
 import Data.Word (Word16)
 import qualified Language.C.Inline as C (include, pure)
 import System.Libevdev (InputEvent (inputEventCode, inputEventType, inputEventValue))
@@ -56,38 +53,29 @@ instance Applicative Source where
 
   (<*>) source = Source . (<*>) (runSource source) . runSource
 
-event :: Source (Maybe InputEvent)
-event = Source go
+subscribe :: Word16 -> Word16 -> (Int32 -> a) -> a -> Source a
+subscribe kind code f initial = Source (initial :< loop initial)
   where
-    go = Nothing :< \current -> Just . fromMaybe current <$> go
-
-stateful :: a -> Source (a -> a) -> Source a
-stateful initial = Source . go initial . runSource
-  where
-    go current ~(f :< fs) = f current :< go (f current) . fs
-
-control :: a -> Source Word16 -> Source Word16 -> Source (Int32 -> a) -> Source a
-control initial types codes fs =
-  stateful initial (maybe (\_ _ _ -> id) k <$> event <*> types <*> codes <*> fs)
-  where
-    k delta type' code f current
-      | inputEventType delta == type' && inputEventCode delta == code = f (inputEventValue delta)
-      | otherwise = current
+    loop current event
+      | inputEventType event == kind && inputEventCode event == code =
+        let { increment = f (inputEventValue event) }
+         in increment :< loop increment
+      | otherwise = current :< loop current
 
 -- * Controls
 newtype Key = Key {unKey :: Int32}
 
 key :: Word16 -> Source Key
-key code = control (Key 0) (pure type') (pure code) (pure Key)
+key code = subscribe kind code Key (Key 0)
   where
-    type' = [C.pure| uint16_t { EV_KEY } |]
+    kind = [C.pure| uint16_t { EV_KEY } |]
 
 newtype Axis = Axis {unAxis :: Int32}
 
 axis :: Word16 -> Source Axis
-axis code = control (Axis 0) (pure type') (pure code) (pure Axis)
+axis code = subscribe kind code Axis (Axis 0)
   where
-    type' = [C.pure| uint16_t { EV_ABS } |]
+    kind = [C.pure| uint16_t { EV_ABS } |]
 
 data Joystick = Joystick {joystickX :: Axis, joystickY :: Axis}
 
