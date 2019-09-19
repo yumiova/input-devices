@@ -27,9 +27,9 @@ C.include "<stdint.h>"
 
 C.include "<linux/input.h>"
 
+-- * Internal streams
 infixr 5 :<
 
--- * Internal streams
 data Stream a = a :< (InputEvent -> Stream a)
 
 instance Functor Stream where
