@@ -57,18 +57,19 @@ instance Applicative Source where
     Source . liftA2 (liftA2 (liftA2 (<*>))) (runSource source) . runSource
 
 receive :: Word16 -> Word16 -> (Int32 -> a) -> a -> Source a
-receive kind code f initial = Source $ \libevdev -> do
-  valid <-
-    [C.exp| int {
-      libevdev_has_event_code(
-        $(struct libevdev *libevdev),
-        $(uint16_t kind),
-        $(uint16_t code)
-      )
-    } |]
-  if valid == 1
-    then pure (Just (initial :< loop initial))
-    else pure Nothing
+receive kind code f initial =
+  Source $ \libevdev -> do
+    valid <-
+      [C.exp| int {
+        libevdev_has_event_code(
+          $(struct libevdev *libevdev),
+          $(uint16_t kind),
+          $(uint16_t code)
+        )
+      } |]
+    if valid == 1
+      then pure (Just (initial :< loop initial))
+      else pure Nothing
   where
     apply current event
       | inputEventType event == kind && inputEventCode event == code =
