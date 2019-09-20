@@ -2,7 +2,9 @@
 
 module Input.Sink
   ( -- * Internal streams
-    Stream ((:<))
+    Stream ((:<)),
+    -- * Control sinks
+    Sink (Sink, runSink)
     )
 where
 
@@ -24,3 +26,6 @@ instance Divisible Stream where
     bevent <> cevent :< \(f -> ~(b, c)) -> divide f (bs b) (cs c)
 
   conquer = [] :< const conquer
+
+-- * Control sinks
+newtype Sink a = Sink {runSink :: Stream a}
