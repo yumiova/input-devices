@@ -1,3 +1,5 @@
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE ViewPatterns #-}
 
 module Input.Sink
@@ -15,6 +17,7 @@ import Data.Functor.Contravariant.Divisible (Divisible (conquer, divide))
 import Data.Int (Int32)
 import Data.Word (Word16)
 import Foreign (Ptr)
+import qualified Language.C.Inline as C (baseCtx, context, exp, include)
 import System.Libevdev
   ( InputEvent
       ( InputEvent,
@@ -24,8 +27,17 @@ import System.Libevdev
         inputEventValue
         ),
     Libevdev,
-    Timeval (Timeval, timevalSec, timevalUsec)
+    Timeval (Timeval, timevalSec, timevalUsec),
+    libevdevCtx
     )
+
+C.context (C.baseCtx <> libevdevCtx)
+
+C.include "<stdint.h>"
+
+C.include "<stdlib.h>"
+
+C.include "<libevdev/libevdev.h>"
 
 -- * Internal streams
 infixr 5 :<
@@ -55,7 +67,16 @@ instance Divisible Sink where
   conquer = Sink (const (pure conquer))
 
 send :: Word16 -> Word16 -> (a -> Int32) -> Sink a
-send kind code f = Sink (const (pure ([] :< first)))
+send kind code f = Sink $ \libevdev -> do
+  [C.exp| void {
+    libevdev_enable_event_code(
+      $(struct libevdev *libevdev),
+      $(uint16_t kind),
+      $(uint16_t code),
+      NULL
+    )
+  } |]
+  pure ([] :< first)
   where
     -- Time values are never used by the user device aspect of `libevdev`
     timeval = Timeval {timevalSec = 0, timevalUsec = 0}
