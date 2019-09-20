@@ -4,7 +4,7 @@
 module Input.Control
   ( Key (Key, unKey),
     key,
-    Axis (Axis, unAxis),
+    Axis (Axis, axisAbsinfo, axisValue),
     axis,
     Joystick (Joystick, joystickX, joystickY),
     joystick
@@ -13,8 +13,9 @@ where
 
 import Data.Int (Int32)
 import Data.Word (Word16)
-import Input.Source (Source, receive)
+import Input.Source (Source, receive, receiveAbs)
 import qualified Language.C.Inline as C (include, pure)
+import System.Libevdev (InputAbsinfo)
 
 C.include "<stdint.h>"
 
@@ -28,11 +29,11 @@ key code = receive kind code Key (Key 0)
   where
     kind = [C.pure| uint16_t { EV_KEY } |]
 
-newtype Axis = Axis {unAxis :: Int32}
+data Axis = Axis {axisAbsinfo :: InputAbsinfo, axisValue :: Int32}
   deriving (Eq, Ord, Show, Read)
 
 axis :: Word16 -> Source Axis
-axis code = receive kind code Axis (Axis 0)
+axis code = receiveAbs kind code Axis (`Axis` 0)
   where
     kind = [C.pure| uint16_t { EV_ABS } |]
 
