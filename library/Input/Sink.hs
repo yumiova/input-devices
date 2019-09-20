@@ -9,10 +9,12 @@ module Input.Sink
     )
 where
 
+import Control.Applicative (liftA2)
 import Data.Functor.Contravariant (Contravariant (contramap))
 import Data.Functor.Contravariant.Divisible (Divisible (conquer, divide))
 import Data.Int (Int32)
 import Data.Word (Word16)
+import Foreign (Ptr)
 import System.Libevdev
   ( InputEvent
       ( InputEvent,
@@ -21,6 +23,7 @@ import System.Libevdev
         inputEventType,
         inputEventValue
         ),
+    Libevdev,
     Timeval (Timeval, timevalSec, timevalUsec)
     )
 
@@ -40,19 +43,19 @@ instance Divisible Stream where
   conquer = [] :< const conquer
 
 -- * Control sinks
-newtype Sink a = Sink {runSink :: Stream a}
+newtype Sink a = Sink {runSink :: Ptr Libevdev -> IO (Stream a)}
 
 instance Contravariant Sink where
-  contramap f = Sink . contramap f . runSink
+  contramap f = Sink . fmap (fmap (contramap f)) . runSink
 
 instance Divisible Sink where
 
-  divide f bsink = Sink . divide f (runSink bsink) . runSink
+  divide f bsink = Sink . liftA2 (liftA2 (divide f)) (runSink bsink) . runSink
 
-  conquer = Sink conquer
+  conquer = Sink (const (pure conquer))
 
 send :: Word16 -> Word16 -> (a -> Int32) -> Sink a
-send kind code f = Sink $ [] :< first
+send kind code f = Sink (const (pure ([] :< first)))
   where
     -- Time values are never used by the user device aspect of `libevdev`
     timeval = Timeval {timevalSec = 0, timevalUsec = 0}
