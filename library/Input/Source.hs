@@ -6,7 +6,7 @@ module Input.Source
     Stream ((:<)),
     -- * Control sources
     Source (Source, runSource),
-    subscribe
+    receive
     )
 where
 
@@ -56,8 +56,8 @@ instance Applicative Source where
   (<*>) source =
     Source . liftA2 (liftA2 (liftA2 (<*>))) (runSource source) . runSource
 
-subscribe :: Word16 -> Word16 -> (Int32 -> a) -> a -> Source a
-subscribe kind code f initial = Source $ \libevdev -> do
+receive :: Word16 -> Word16 -> (Int32 -> a) -> a -> Source a
+receive kind code f initial = Source $ \libevdev -> do
   valid <-
     [C.exp| int {
       libevdev_has_event_code(

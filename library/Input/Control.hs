@@ -13,7 +13,7 @@ where
 
 import Data.Int (Int32)
 import Data.Word (Word16)
-import Input.Source (Source, subscribe)
+import Input.Source (Source, receive)
 import qualified Language.C.Inline as C (include, pure)
 
 C.include "<stdint.h>"
@@ -24,7 +24,7 @@ newtype Key = Key {unKey :: Int32}
   deriving (Eq, Ord, Show, Read)
 
 key :: Word16 -> Source Key
-key code = subscribe kind code Key (Key 0)
+key code = receive kind code Key (Key 0)
   where
     kind = [C.pure| uint16_t { EV_KEY } |]
 
@@ -32,7 +32,7 @@ newtype Axis = Axis {unAxis :: Int32}
   deriving (Eq, Ord, Show, Read)
 
 axis :: Word16 -> Source Axis
-axis code = subscribe kind code Axis (Axis 0)
+axis code = receive kind code Axis (Axis 0)
   where
     kind = [C.pure| uint16_t { EV_ABS } |]
 
