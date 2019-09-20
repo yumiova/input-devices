@@ -29,3 +29,12 @@ instance Divisible Stream where
 
 -- * Control sinks
 newtype Sink a = Sink {runSink :: Stream a}
+
+instance Contravariant Sink where
+  contramap f = Sink . contramap f . runSink
+
+instance Divisible Sink where
+
+  divide f bsink = Sink . divide f (runSink bsink) . runSink
+
+  conquer = Sink conquer
