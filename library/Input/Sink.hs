@@ -4,13 +4,25 @@ module Input.Sink
   ( -- * Internal streams
     Stream ((:<)),
     -- * Control sinks
-    Sink (Sink, runSink)
+    Sink (Sink, runSink),
+    send
     )
 where
 
 import Data.Functor.Contravariant (Contravariant (contramap))
 import Data.Functor.Contravariant.Divisible (Divisible (conquer, divide))
-import System.Libevdev (InputEvent)
+import Data.Int (Int32)
+import Data.Word (Word16)
+import System.Libevdev
+  ( InputEvent
+      ( InputEvent,
+        inputEventCode,
+        inputEventTime,
+        inputEventType,
+        inputEventValue
+        ),
+    Timeval (Timeval, timevalSec, timevalUsec)
+    )
 
 -- * Internal streams
 infixr 5 :<
@@ -38,3 +50,31 @@ instance Divisible Sink where
   divide f bsink = Sink . divide f (runSink bsink) . runSink
 
   conquer = Sink conquer
+
+send :: Word16 -> Word16 -> (a -> Int32) -> Sink a
+send kind code f = Sink $ [] :< first
+  where
+    -- Time values are never used by the user device aspect of `libevdev`
+    timeval = Timeval {timevalSec = 0, timevalUsec = 0}
+    -- First pass will always fire an event: the first value ever
+    first a = [event] :< rest current
+      where
+        current = f a
+        event = InputEvent
+          { inputEventTime = timeval,
+            inputEventType = kind,
+            inputEventCode = code,
+            inputEventValue = current
+            }
+    -- Remaining passes will only fire events if the values have changed
+    rest previous a
+      | previous == current = [] :< rest previous
+      | otherwise = [event] :< rest current
+      where
+        current = f a
+        event = InputEvent
+          { inputEventTime = timeval,
+            inputEventType = kind,
+            inputEventCode = code,
+            inputEventValue = current
+            }
