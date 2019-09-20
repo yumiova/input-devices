@@ -61,6 +61,7 @@ library
   other-extensions:
     QuasiQuotes
     TemplateHaskell
+    ViewPatterns
 
   ghc-options:
     -Wall -Wcompat -Wincomplete-uni-patterns
