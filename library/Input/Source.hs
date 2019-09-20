@@ -6,7 +6,8 @@ module Input.Source
     Stream ((:<)),
     -- * Control sources
     Source (Source, runSource),
-    receive
+    receive,
+    receiveAbs
     )
 where
 
@@ -14,11 +15,12 @@ import Control.Applicative (liftA2)
 import Data.Foldable (foldl')
 import Data.Int (Int32)
 import Data.Word (Word16)
-import Foreign (Ptr)
+import Foreign (Ptr, peek)
 import Foreign.C (CInt (CInt))
 import qualified Language.C.Inline as C (baseCtx, context, exp, include)
 import System.Libevdev
-  ( InputEvent (inputEventCode, inputEventType, inputEventValue),
+  ( InputAbsinfo,
+    InputEvent (inputEventCode, inputEventType, inputEventValue),
     Libevdev,
     libevdevCtx
     )
@@ -83,3 +85,22 @@ receive kind code f initial =
     loop current delta = increment :< loop increment
       where
         { increment = foldl' apply current delta }
+
+absinfo :: Word16 -> Source InputAbsinfo
+absinfo code =
+  Source $ \libevdev -> do
+    source <-
+      [C.exp| struct input_absinfo const * {
+        libevdev_get_abs_info($(struct libevdev *libevdev), $(uint16_t code))
+      } |]
+    value <- peek source
+    pure (Just (pure value))
+
+receiveAbs
+  :: Word16
+  -> Word16
+  -> (InputAbsinfo -> Int32 -> a)
+  -> (InputAbsinfo -> a)
+  -> Source a
+receiveAbs kind code f initial =
+  receive kind code (flip f) initial <*> absinfo code
