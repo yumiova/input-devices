@@ -1,5 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
 
 module Input.Source
   ( -- * Internal streams
@@ -63,8 +64,14 @@ instance Applicative Source where
           Nothing -> pure Nothing
           Just stream -> fmap (stream <*>) <$> action
 
-receive :: Word16 -> Word16 -> (Int32 -> a) -> a -> Source a
-receive kind code f initial =
+receiveWith
+  :: (Ptr Libevdev -> IO b)
+  -> Word16
+  -> Word16
+  -> (Int32 -> a)
+  -> a
+  -> Source (b, a)
+receiveWith after kind code f initial =
   Source $ \libevdev -> do
     valid <-
       [C.exp| int {
@@ -75,32 +82,34 @@ receive kind code f initial =
         )
       } |]
     if valid == 1
-      then pure (Just (initial :< loop initial))
+      then do
+        also <- after libevdev
+        pure (Just ((also,) <$> stream))
       else pure Nothing
   where
-    apply current event
+    step current event
       | inputEventType event == kind && inputEventCode event == code =
         f (inputEventValue event)
       | otherwise = current
     loop current delta = increment :< loop increment
       where
-        { increment = foldl' apply current delta }
+        { increment = foldl' step current delta }
+    stream = initial :< loop initial
 
-absinfo :: Word16 -> Source InputAbsinfo
-absinfo code =
-  Source $ \libevdev -> do
-    source <-
-      [C.exp| struct input_absinfo const * {
-        libevdev_get_abs_info($(struct libevdev *libevdev), $(uint16_t code))
-      } |]
-    value <- peek source
-    pure (Just (pure value))
+receive :: Word16 -> Word16 -> (Int32 -> a) -> a -> Source a
+receive kind code f = fmap snd . receiveWith (const (pure ())) kind code f
 
 receiveAbs
   :: Word16
   -> Word16
-  -> (InputAbsinfo -> Int32 -> a)
-  -> (InputAbsinfo -> a)
-  -> Source a
-receiveAbs kind code f initial =
-  receive kind code (flip f) initial <*> absinfo code
+  -> (Int32 -> a)
+  -> a
+  -> Source (InputAbsinfo, a)
+receiveAbs kind code = receiveWith after kind code
+  where
+    after libevdev = do
+      source <-
+        [C.exp| struct input_absinfo const * {
+          libevdev_get_abs_info($(struct libevdev *libevdev), $(uint16_t code))
+        } |]
+      peek source

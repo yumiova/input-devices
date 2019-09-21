@@ -11,6 +11,7 @@ module Input.Control
     )
 where
 
+import Data.Function ((&))
 import Data.Int (Int32)
 import Data.Word (Word16)
 import Input.Source (Source, receive, receiveAbs)
@@ -33,7 +34,7 @@ data Axis = Axis {axisAbsinfo :: InputAbsinfo, axisValue :: Int32}
   deriving (Eq, Ord, Show, Read)
 
 axis :: Word16 -> Source Axis
-axis code = receiveAbs kind code Axis (`Axis` 0)
+axis code = uncurry (&) <$> receiveAbs kind code (flip Axis) (`Axis` 0)
   where
     kind = [C.pure| uint16_t { EV_ABS } |]
 
