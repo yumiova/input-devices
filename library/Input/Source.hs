@@ -56,13 +56,8 @@ instance Applicative Source where
 
   pure = Source . const . pure . Just . pure
 
-  (<*>) source = Source . liftA2 k (runSource source) . runSource
-    where
-      k faction action = do
-        mstream <- faction
-        case mstream of
-          Nothing -> pure Nothing
-          Just stream -> fmap (stream <*>) <$> action
+  (<*>) source =
+    Source . liftA2 (liftA2 (liftA2 (<*>))) (runSource source) . runSource
 
 receiveWith
   :: (Ptr Libevdev -> IO b)
