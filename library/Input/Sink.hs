@@ -12,9 +12,11 @@ module Input.Sink
 where
 
 import Control.Applicative (liftA2)
+import Data.Bifunctor (bimap)
 import Data.Functor.Contravariant (Contravariant (contramap))
 import Data.Functor.Contravariant.Divisible (Divisible (conquer, divide))
 import Data.Int (Int32)
+import Data.Profunctor (Profunctor (dimap))
 import Data.Word (Word16)
 import Foreign (Ptr, castPtr, nullPtr)
 import qualified Language.C.Inline as C (baseCtx, context, exp, include)
@@ -55,16 +57,20 @@ instance Divisible Stream where
   conquer = [] :< const conquer
 
 -- * Control sinks
-newtype Sink a = Sink {runSink :: Ptr Libevdev -> IO (Stream a)}
+newtype Sink a = Sink {runSink :: Ptr Libevdev -> a -> IO (Stream a)}
 
 instance Contravariant Sink where
-  contramap f = Sink . fmap (fmap (contramap f)) . runSink
+  contramap f = Sink . fmap (dimap f (fmap (contramap f))) . runSink
 
 instance Divisible Sink where
 
-  divide f bsink = Sink . liftA2 (liftA2 (divide f)) (runSink bsink) . runSink
+  divide f bsink =
+    Sink . liftA2 (diliftA2 f (liftA2 (divide f))) (runSink bsink) . runSink
+    where
+      diliftA2 input output left right =
+        uncurry output . bimap left right . input
 
-  conquer = Sink (const (pure conquer))
+  conquer = Sink (const (const (pure conquer)))
 
 sendWith
   :: ((Ptr a -> IO ()) -> IO ())
@@ -72,7 +78,7 @@ sendWith
   -> Word16
   -> (a -> Int32)
   -> Sink a
-sendWith before kind code f = Sink $ \libevdev -> do
+sendWith before kind code f = Sink $ \libevdev _ -> do
   before $ \(castPtr -> pointer) ->
     [C.exp| void {
       libevdev_enable_event_code(
