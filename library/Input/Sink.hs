@@ -16,7 +16,7 @@ import Data.Functor.Contravariant (Contravariant (contramap))
 import Data.Functor.Contravariant.Divisible (Divisible (conquer, divide))
 import Data.Int (Int32)
 import Data.Word (Word16)
-import Foreign (Ptr)
+import Foreign (Ptr, castPtr, nullPtr)
 import qualified Language.C.Inline as C (baseCtx, context, exp, include)
 import System.Libevdev
   ( InputEvent
@@ -66,16 +66,22 @@ instance Divisible Sink where
 
   conquer = Sink (const (pure conquer))
 
-send :: Word16 -> Word16 -> (a -> Int32) -> Sink a
-send kind code f = Sink $ \libevdev -> do
-  [C.exp| void {
-    libevdev_enable_event_code(
-      $(struct libevdev *libevdev),
-      $(uint16_t kind),
-      $(uint16_t code),
-      NULL
-    )
-  } |]
+sendWith
+  :: ((Ptr a -> IO ()) -> IO ())
+  -> Word16
+  -> Word16
+  -> (a -> Int32)
+  -> Sink a
+sendWith before kind code f = Sink $ \libevdev -> do
+  before $ \(castPtr -> pointer) ->
+    [C.exp| void {
+      libevdev_enable_event_code(
+        $(struct libevdev *libevdev),
+        $(uint16_t kind),
+        $(uint16_t code),
+        $(void *pointer)
+      )
+    } |]
   pure ([] :< first)
   where
     -- Time values are never used by the user device aspect of `libevdev`
@@ -102,3 +108,6 @@ send kind code f = Sink $ \libevdev -> do
             inputEventCode = code,
             inputEventValue = current
             }
+
+send :: Word16 -> Word16 -> (a -> Int32) -> Sink a
+send = sendWith ($ nullPtr)
