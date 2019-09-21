@@ -62,6 +62,7 @@ library
   other-extensions:
     QuasiQuotes
     TemplateHaskell
+    TupleSections
     ViewPatterns
 
   ghc-options:
