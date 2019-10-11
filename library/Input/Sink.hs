@@ -87,7 +87,15 @@ sendWith
   -> (a -> Int32)
   -> Sink (b, a)
 sendWith before kind code f =
-  Sink $ \libevdev (payload, _) -> do
+  Sink $ \libevdev (payload, a) -> do
+    let current = f a
+        event = InputEvent
+          { inputEventTime = timeval,
+            inputEventType = kind,
+            inputEventCode = code,
+            inputEventValue = current
+            }
+        stream = [event] :< loop current
     before payload $ \(castPtr -> pointer) ->
       [C.exp| void {
         libevdev_enable_event_code(
@@ -97,24 +105,13 @@ sendWith before kind code f =
           $(void *pointer)
         )
       } |]
-    pure ([] :< first)
+    pure stream
   where
     -- Time values are never used by the user device aspect of `libevdev`
     timeval = Timeval {timevalSec = 0, timevalUsec = 0}
-    -- First pass will always fire an event: the first value ever
-    first (_, a) = [event] :< rest current
-      where
-        current = f a
-        event = InputEvent
-          { inputEventTime = timeval,
-            inputEventType = kind,
-            inputEventCode = code,
-            inputEventValue = current
-            }
-    -- Remaining passes will only fire events if the values have changed
-    rest previous (_, a)
-      | previous == current = [] :< rest previous
-      | otherwise = [event] :< rest current
+    loop previous (_, a)
+      | previous == current = [] :< loop previous
+      | otherwise = [event] :< loop current
       where
         current = f a
         event = InputEvent
