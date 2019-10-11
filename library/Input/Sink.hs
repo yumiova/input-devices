@@ -1,5 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ViewPatterns #-}
 
 module Input.Sink
@@ -122,8 +123,7 @@ sendWith before kind code f =
             }
 
 send :: Word16 -> Word16 -> (a -> Int32) -> Sink a
-send kind code f =
-  contramap (\a -> ((), a)) (sendWith (const ($ nullPtr)) kind code f)
+send kind code = contramap ((),) . sendWith (const ($ nullPtr)) kind code
 
 sendAbs :: Word16 -> Word16 -> (a -> Int32) -> Sink (InputAbsinfo, a)
 sendAbs = sendWith before
