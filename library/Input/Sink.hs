@@ -7,7 +7,9 @@ module Input.Sink
     Stream ((:<)),
     -- * Control sinks
     Sink (Sink, runSink),
-    send
+    sendWith,
+    send,
+    sendAbs
     )
 where
 
@@ -18,10 +20,11 @@ import Data.Functor.Contravariant.Divisible (Divisible (conquer, divide))
 import Data.Int (Int32)
 import Data.Profunctor (Profunctor (dimap))
 import Data.Word (Word16)
-import Foreign (Ptr, castPtr, nullPtr)
+import Foreign (Ptr, alloca, castPtr, nullPtr, poke)
 import qualified Language.C.Inline as C (baseCtx, context, exp, include)
 import System.Libevdev
-  ( InputEvent
+  ( InputAbsinfo,
+    InputEvent
       ( InputEvent,
         inputEventCode,
         inputEventTime,
@@ -73,27 +76,28 @@ instance Divisible Sink where
   conquer = Sink (const (const (pure conquer)))
 
 sendWith
-  :: ((Ptr a -> IO ()) -> IO ())
+  :: (b -> (Ptr b -> IO ()) -> IO ())
   -> Word16
   -> Word16
   -> (a -> Int32)
-  -> Sink a
-sendWith before kind code f = Sink $ \libevdev _ -> do
-  before $ \(castPtr -> pointer) ->
-    [C.exp| void {
-      libevdev_enable_event_code(
-        $(struct libevdev *libevdev),
-        $(uint16_t kind),
-        $(uint16_t code),
-        $(void *pointer)
-      )
-    } |]
-  pure ([] :< first)
+  -> Sink (b, a)
+sendWith before kind code f =
+  Sink $ \libevdev (payload, _) -> do
+    before payload $ \(castPtr -> pointer) ->
+      [C.exp| void {
+        libevdev_enable_event_code(
+          $(struct libevdev *libevdev),
+          $(uint16_t kind),
+          $(uint16_t code),
+          $(void *pointer)
+        )
+      } |]
+    pure ([] :< first)
   where
     -- Time values are never used by the user device aspect of `libevdev`
     timeval = Timeval {timevalSec = 0, timevalUsec = 0}
     -- First pass will always fire an event: the first value ever
-    first a = [event] :< rest current
+    first (_, a) = [event] :< rest current
       where
         current = f a
         event = InputEvent
@@ -103,7 +107,7 @@ sendWith before kind code f = Sink $ \libevdev _ -> do
             inputEventValue = current
             }
     -- Remaining passes will only fire events if the values have changed
-    rest previous a
+    rest previous (_, a)
       | previous == current = [] :< rest previous
       | otherwise = [event] :< rest current
       where
@@ -116,4 +120,13 @@ sendWith before kind code f = Sink $ \libevdev _ -> do
             }
 
 send :: Word16 -> Word16 -> (a -> Int32) -> Sink a
-send = sendWith ($ nullPtr)
+send kind code f =
+  contramap (\a -> ((), a)) (sendWith (const ($ nullPtr)) kind code f)
+
+sendAbs :: Word16 -> Word16 -> (a -> Int32) -> Sink (InputAbsinfo, a)
+sendAbs = sendWith before
+  where
+    before a f =
+      alloca $ \pointer -> do
+        poke pointer a
+        f pointer
