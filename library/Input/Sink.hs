@@ -14,11 +14,10 @@ module Input.Sink
 where
 
 import Control.Applicative (liftA2)
-import Data.Bifunctor (bimap)
 import Data.Functor.Contravariant (Contravariant (contramap))
 import Data.Functor.Contravariant.Divisible (Divisible (conquer, divide))
 import Data.Int (Int32)
-import Data.Profunctor (Profunctor (dimap))
+import Data.Profunctor (Profunctor (dimap, lmap))
 import Data.Word (Word16)
 import Foreign (Ptr, alloca, castPtr, nullPtr, poke)
 import qualified Language.C.Inline as C (baseCtx, context, exp, include)
@@ -65,13 +64,19 @@ newtype Sink a = Sink {runSink :: Ptr Libevdev -> a -> IO (Stream a)}
 instance Contravariant Sink where
   contramap f = Sink . fmap (dimap f (fmap (contramap f))) . runSink
 
+diliftA2
+  :: (Profunctor p, Applicative (p (a, b)))
+  => (c -> (a, b))
+  -> (d -> e -> f)
+  -> p a d
+  -> p b e
+  -> p c f
+diliftA2 f g left = dimap f (uncurry g) . liftA2 (,) (lmap fst left) . lmap snd
+
 instance Divisible Sink where
 
   divide f bsink =
     Sink . liftA2 (diliftA2 f (liftA2 (divide f))) (runSink bsink) . runSink
-    where
-      diliftA2 input output left right =
-        uncurry output . bimap left right . input
 
   conquer = Sink (const (const (pure conquer)))
 

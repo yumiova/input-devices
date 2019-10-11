@@ -6,11 +6,16 @@ module Input.Device
     )
 where
 
+import Control.Arrow ((&&&))
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (forConcurrently_)
 import Control.Exception (bracket)
+import Data.Functor.Contravariant
+import Data.Functor.Contravariant.Divisible
+import Data.Profunctor
 import Foreign (Ptr, alloca, peek)
 import Foreign.C (CInt (CInt))
+import Input.Sink (Sink)
 import Input.Source (Source (runSource))
 import qualified Input.Source as Source (Stream ((:<)))
 import qualified Language.C.Inline as C (baseCtx, context, exp, include, pure)
@@ -24,6 +29,22 @@ import System.Posix.IO
     openFd
     )
 import System.Posix.Types (Fd (Fd))
+
+data Control a b
+  = Control (Sink a) (Source b)
+
+instance Profunctor Control where
+  dimap f g ~(Control sink source) = Control (contramap f sink) (g <$> source)
+
+instance Functor (Control a) where
+  fmap f ~(Control sink source) = Control sink (fmap f source)
+
+instance Applicative (Control a) where
+
+  pure a = Control conquer (pure a)
+
+  ~(Control lsink fsource) <*> ~(Control rsink source) =
+    Control (divide (id &&& id) lsink rsink) (fsource <*> source)
 
 C.context (C.baseCtx <> libevdevCtx)
 
